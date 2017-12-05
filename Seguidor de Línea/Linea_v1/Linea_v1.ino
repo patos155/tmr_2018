@@ -2,7 +2,6 @@
 AF_DCMotor Md(4);   //motor derecho
 AF_DCMotor Mi(3);   //motor izquierdo
 
-
 int izq_1=22;
 int izq_2=24;
 int centro_3=26;
@@ -42,61 +41,80 @@ void loop() {
   Serial.print("Der ext:");Serial.println(l1);
   delay(500);*/
 
-
+//CENTRADO  
   if(l1==1 && l2==1 && l4==1 && l5==1){
     Avanzar();
   }
-  
-  if(l1==0 || l1==0 && l2==0){
+//Muy desviado a la izquierda
+  if(l1==0 || l1==0 && l2==0 || l1==0 && l2==0 && l4==0){
     GirarI2();
   }
-
-  if(l5==0 || l5==0 && l4==0){
+//Muy desviado a la derecha
+  if(l5==0 || l5==0 && l4==0 || l2==0 && l4==0 && l5==0){
     GirarD2();
   }
-
+//Desviado a la izquierda
   if(l2==0){
     GirarI1();
   }
+  //Desviado a la derecha
   if(l4==0){
     GirarD1();
+  }  
+//Posibles intersecciones
+  if(l2==0 && l3==0 && l4==0){
+    Avanzar();
   }
-  
+  if (l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
+    Avanzar();
+    
+  }
+
+  if(l2==0 && l4==0){
+    Avanzar();
+  }
   
 }
 
 
 void GirarD2(){
-  Md.setSpeed(60);
+  Md.setSpeed(200);
   Md.run(BACKWARD);
-  Mi.setSpeed(100);
+  Mi.setSpeed(225);
   Mi.run(FORWARD);
 }
 
 void GirarI2(){
-  Mi.setSpeed(60);
+  Mi.setSpeed(200);
   Mi.run(BACKWARD);
-  Md.setSpeed(100);
+  Md.setSpeed(225);
   Md.run(FORWARD);
 }
 
 void GirarD1(){
-  Md.setSpeed(20);
+  Md.setSpeed(100);
   Md.run(BACKWARD);
-  Mi.setSpeed(100);
+  Mi.setSpeed(225);
   Mi.run(FORWARD);
 }
 
 void GirarI1(){
-  Mi.setSpeed(20);
+  Mi.setSpeed(100);
   Mi.run(BACKWARD);
-  Md.setSpeed(100);
+  Md.setSpeed(225);
   Md.run(FORWARD);
 }
 
 void Avanzar(){
-  Md.setSpeed(100);
+  Md.setSpeed(200);
   Md.run(FORWARD);
-  Mi.setSpeed(100);
+  Mi.setSpeed(200);
   Mi.run(FORWARD);
 }
+void Retroceder(){
+  Md.setSpeed(200);
+  Md.run(FORWARD);
+  Mi.setSpeed(200);
+  Mi.run(FORWARD);
+}
+
