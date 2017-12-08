@@ -50,7 +50,17 @@ void loop() {
     Avanzar();
   }*/
 
+  if (l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
+    Quieto();
+    delay(1000);
+    Retroceder();
+    delay(1000);
+    Recuperar();
+    delay(500);  
+  }
+  
   if(l1==0 && l2==0 || l4==0 && l5==0 || l2==0  && l4==0){
+    Quieto();
     delay(1000);
     Retroceder();
     delay(1000);
@@ -61,6 +71,7 @@ void loop() {
   }
 
   if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l2==0 && l3==1 && l4==0){
+    Quieto();
     delay(1000);
     Retroceder();
     delay(1000);
@@ -132,8 +143,15 @@ void Retroceder(){
 
 
 void Recuperar(){
-  Md.setSpeed(50);
+  Md.setSpeed(200);
   Md.run(FORWARD);
+  Mi.setSpeed(0);
+  Mi.run(RELEASE);
+}
+
+void Quieto(){
+  Md.setSpeed(0);
+  Md.run(RELEASE);
   Mi.setSpeed(0);
   Mi.run(RELEASE);
 }
