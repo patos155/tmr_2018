@@ -58,7 +58,19 @@ void loop() {
   }*/
 
   if(l1==0 && l2==0 || l4==0 && l5==0 || l2==0  && l4==0){
+    delay(1000);
+    Retroceder();
+    delay(1000);
     Recuperar();
+    delay(500);
+  }
+
+  if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l2==0 && l3==1 && l4==0){
+    delay(1000);
+    Retroceder();
+    delay(1000);
+    Recuperar();
+    delay(500);
   }
   
 //Muy desviado a la izquierda
@@ -124,13 +136,9 @@ void Retroceder(){
 
 
 void Recuperar(){
-  delay(1000);
-  Retroceder();
-  delay(1000);
-  Md.setSpeed(250);
+  Md.setSpeed(50);
   Md.run(FORWARD);
   Mi.setSpeed(0);
   Mi.run(RELEASE);
-  delay(500);
 }
 
