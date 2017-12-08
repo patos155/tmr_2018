@@ -34,13 +34,6 @@ void loop() {
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
 
-  /*Serial.print("Izq ext:");Serial.println(l5);
-  Serial.print("Izq int:");Serial.println(l4);
-  Serial.print("Centro:");Serial.println(l3);
-  Serial.print("Der int:");Serial.println(l2);
-  Serial.print("Der ext:");Serial.println(l1);
-  delay(500);*/
-
 //CENTRADO  
   if(l1==1 && l2==1 && l4==1 && l5==1){
     Avanzar();
@@ -63,6 +56,8 @@ void loop() {
     delay(1000);
     Recuperar();
     delay(500);
+    imprimirDatos();
+    
   }
 
   if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l2==0 && l3==1 && l4==0){
@@ -71,6 +66,7 @@ void loop() {
     delay(1000);
     Recuperar();
     delay(500);
+    imprimirDatos();
   }
   
 //Muy desviado a la izquierda
@@ -129,9 +125,9 @@ void Avanzar(){
 }
 void Retroceder(){
   Md.setSpeed(250);
-  Md.run(FORWARD);
+  Md.run(BACKWARD);
   Mi.setSpeed(250);
-  Mi.run(FORWARD);
+  Mi.run(BACKWARD);
 }
 
 
@@ -140,5 +136,13 @@ void Recuperar(){
   Md.run(FORWARD);
   Mi.setSpeed(0);
   Mi.run(RELEASE);
+}
+
+void imprimirDatos(){
+  Serial.print("Izq ext:");Serial.println(l5);
+  Serial.print("Izq int:");Serial.println(l4);
+  Serial.print("Centro:");Serial.println(l3);
+  Serial.print("Der int:");Serial.println(l2);
+  Serial.print("Der ext:");Serial.println(l1);
 }
 
