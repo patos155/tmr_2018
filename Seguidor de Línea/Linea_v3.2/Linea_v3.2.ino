@@ -77,27 +77,32 @@ void loop() {
   }
 
 //90° Izquierda
-  if(l1==0 && 12==0 || l1==0 && l2==0 && l3==0){
+  if(l1==0 && 12==0 || l1==0 && l2==0 && l3==0 || l1==0 && l2==0 && l3==0 && l4==0){
     GirarI2();
   }
 
 //90° Derecha
-  if(l5==0 && l4==0 || l5==0 && l4==0 && l3==0){
+  if(l5==0 && l4==0 || l5==0 && l4==0 && l3==0 || l5==0 && l4==0 && l3==0 && l2==0){
     GirarD2();
+  }
+
+//Intersecciones
+  if(l2==0 && l4==0){
+    Avanzar();
   }
 
 }
 
 
 void GirarD2(){
-  Md.setSpeed(200);
+  Md.setSpeed(225);
   Md.run(BACKWARD);
   Mi.setSpeed(250);
   Mi.run(FORWARD);
 }
 
 void GirarI2(){
-  Mi.setSpeed(200);
+  Mi.setSpeed(225);
   Mi.run(BACKWARD);
   Md.setSpeed(250);
   Md.run(FORWARD);
@@ -123,9 +128,9 @@ void Avanzar(){
   Mi.run(FORWARD);
 }
 void Retroceder(){
-  Md.setSpeed(250);
+  Md.setSpeed(125);
   Md.run(BACKWARD);
-  Mi.setSpeed(250);
+  Mi.setSpeed(125);
   Mi.run(BACKWARD);
 }
 void Recuperar(){
