@@ -32,6 +32,7 @@ void setup() {
   pinMode(centro_3,INPUT);
   pinMode(der_4,INPUT);
   pinMode(der_5,INPUT);
+
 }
 
 void loop() {
@@ -41,42 +42,8 @@ void loop() {
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
 
-//CENTRADO  
-  if(l1==1 && l2==1 && l4==1 && l5==1){
-    Avanzar();
-  }
-/*Posibles intersecciones
-  if(l2==0 && l3==0 && l4==0){
-    Avanzar();
-  }
-  if (l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
-    Avanzar();    
-  }
-
-  if(l2==0 && l4==0){
-    Avanzar();
-  }*/
-/*
-  if (l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
-    Quieto();
-    delay(1000);
-    Retroceder();
-    delay(1000);
-    Recuperar();
-    delay(500);  
-  }
   
-  if(l1==0 && l2==0 || l4==0 && l5==0 || l2==0  && l4==0){
-    Quieto();
-    delay(1000);
-    Retroceder();
-    delay(700);
-    Recuperar();
-    delay(500);
-    //imprimirDatos();
-    
-  }*/
-
+//Desacomodarse para recuperar línea
   if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l1==0 && l2==0 && l4==0 && l5==0){
     Quieto();
     delay(500);
@@ -86,84 +53,67 @@ void loop() {
     delay(500);
     //imprimirDatos();
   }
-  
 //Muy desviado a la izquierda
-  if(l1==0  || l1==0 && l2==0 || l1==0 && l2==0 && l3==0 ){
-    if(izquierda2%2==0){
-      izq==false;
-    }
-    
+  if(l1==0 || l1==0 && l2==0){
     GirarI2();
   }
 //Muy desviado a la derecha
-  if(l5==0  || l5==0 && l4==0 || l3==0 && l4==0 && l5==0){
-    derecha2++;
-    if(derecha2%2==0){
-      der=false;
-    }
+  if(l5==0 || l5==0 && l4==0){
     GirarD2();
   }
-//Desviado a la izquierda
-  if(l2==0 && l5==1 && l1==1){
-    izquierda2++;
-    if(izq){
-      GirarI1();
-    }
-    if(izq==false){
-      izq=true;
-      GirarD2();
-    }
-  }
-//Desviado a la derecha
-  if(l4==0 && l1==1 && l5==1){
-    derecha2++;
-    if(der){
-      GirarD1();
-    }
-    if(der==false){
-      GirarI2();
-      der=true;
-    }
-  }  
 
-  if(l1==0 && l2==0 && l3==0 && l4==0){
+//CENTRADO  
+  if(l1==1 && l2==1 && l4==1 && l5==1){
+    Avanzar();
+  }
+  
+//Desviado un poco a la izquierda
+  if(l2==0 && l5==1 && l1==0){
+    GirarI1();
+  }
+//Desviado un poco a la derecha
+  if(l4==0 && l1==0 && l5==0){
+    GirarD1();
+  }
+
+//90° Izquierda
+  if(l1==0 && 12==0 || l1==0 && l2==0 && l3==0){
     GirarI2();
   }
-  if(l5==0 && l4==0 && l3==0 && l2==0){
+
+//90° Derecha
+  if(l5==0 && l4==0 || l5==0 && l4==0 && l3==0){
     GirarD2();
   }
 
-//Curvas de 90
-
-  
 }
 
 
 void GirarD2(){
-  Md.setSpeed(250);
+  Md.setSpeed(200);
   Md.run(BACKWARD);
   Mi.setSpeed(250);
   Mi.run(FORWARD);
 }
 
 void GirarI2(){
-  Mi.setSpeed(250);
+  Mi.setSpeed(200);
   Mi.run(BACKWARD);
   Md.setSpeed(250);
   Md.run(FORWARD);
 }
 
 void GirarD1(){
-  Md.setSpeed(200);
+  Md.setSpeed(150);
   Md.run(BACKWARD);
-  Mi.setSpeed(225);
+  Mi.setSpeed(200);
   Mi.run(FORWARD);
 }
 
 void GirarI1(){
-  Mi.setSpeed(200);
+  Mi.setSpeed(150);
   Mi.run(BACKWARD);
-  Md.setSpeed(225);
+  Md.setSpeed(200);
   Md.run(FORWARD);
 }
 void Avanzar(){
