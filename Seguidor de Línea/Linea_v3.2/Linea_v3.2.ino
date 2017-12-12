@@ -68,11 +68,11 @@ void loop() {
   }
   
 //Desviado un poco a la izquierda
-  if(l2==0 && l5==1 && l1==0){
+  if(l2==0 && l5==1 && l1==1){
     GirarI1();
   }
 //Desviado un poco a la derecha
-  if(l4==0 && l1==0 && l5==0){
+  if(l4==0 && l1==1 && l5==1){
     GirarD1();
   }
 
