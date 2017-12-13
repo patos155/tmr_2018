@@ -68,11 +68,11 @@ void loop() {
   }
   
 //Desviado un poco a la izquierda
-  if(l2==0 && l5==1 && l1==1){
+  if(l2==0 && l5==1 && l1==1 || l2==0){
     GirarI1();
   }
 //Desviado un poco a la derecha
-  if(l4==0 && l1==1 && l5==1){
+  if(l4==0 && l1==1 && l5==1 || l4==0){
     GirarD1();
   }
 
@@ -86,7 +86,7 @@ void loop() {
     GirarD2();
   }
 
-//Intersecciones
+//Interseccion
   if(l2==0 && l4==0){
     Avanzar();
   }
@@ -122,15 +122,15 @@ void GirarI1(){
   Md.run(FORWARD);
 }
 void Avanzar(){
-  Md.setSpeed(125);
+  Md.setSpeed(115);
   Md.run(FORWARD);
-  Mi.setSpeed(125);
+  Mi.setSpeed(115);
   Mi.run(FORWARD);
 }
 void Retroceder(){
-  Md.setSpeed(125);
+  Md.setSpeed(115);
   Md.run(BACKWARD);
-  Mi.setSpeed(125);
+  Mi.setSpeed(115);
   Mi.run(BACKWARD);
 }
 void Recuperar(){
