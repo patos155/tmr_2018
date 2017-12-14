@@ -49,12 +49,13 @@ void loop() {
     delay(500);
     //imprimirDatos();
   }
-  
-//Muy desviado a la izquierda
 
-if (l3==0){
-  Avanzar();
-}
+//Centrado
+  if (l3==0){
+    Avanzar();
+  }
+
+//Muy desviado a la izquierda
   if(l1==0 || l1==0 && l2==0 || l1==0 && l2==0 && l4==0){    //Curvas cerradas
     GirarI2();            //Gira a la izquierda con mayor velocidad normal
   }
