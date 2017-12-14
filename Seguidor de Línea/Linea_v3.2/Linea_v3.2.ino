@@ -3,7 +3,7 @@ AF_DCMotor Md(2);   //motor derecho
 AF_DCMotor Mi(3);   //motor izquierdo
 
 //Pines del sensor infrarrojo
-int izq_1=52;
+int izq_1=52;       
 int izq_2=48;
 int centro_3=51;
 int der_4=50;
@@ -31,7 +31,7 @@ void setup() {
 }
 
 void loop() {
-  //Se guardan datso del sensor infrarrojo
+  //Se guardan datos del sensor infrarrojo
   l1=digitalRead(izq_1);
   l2=digitalRead(izq_2);
   l3=digitalRead(centro_3);
@@ -44,17 +44,18 @@ void loop() {
     Quieto();             //Se detiene
     delay(500);
     Retroceder();         //Va hacia atrás
-    delay(1000);
+    delay(500);
     Recuperar();          //Se desvia un poco para después encontrar nuevamente la línea
     delay(500);
     //imprimirDatos();
   }
+  
 //Muy desviado a la izquierda
-  if(l1==0 || l1==0 && l2==0){    //Curvas cerradas
+  if(l1==0 || l1==0 && l2==0 || l1==0 && l2==0 && l4==0){    //Curvas cerradas
     GirarI2();            //Gira a la izquierda con mayor velocidad normal
   }
 //Muy desviado a la derecha
-  if(l5==0 || l5==0 && l4==0){    //Curvas cerradas
+  if(l5==0 || l5==0 && l4==0 || l5==0 && l4==0 && l2==0){    //Curvas cerradas
     GirarD2();            //Gira a la derecha con mayor velocidad normal 
   }
 
@@ -64,12 +65,12 @@ void loop() {
   }
   
 //Desviado un poco a la izquierda
-  if(l2==0 && l5==1 && l1==1 || l2==0){
+  if(l2==0 && l5==1 && l1==1 || l2==0 || l2==0 && l3==0 || l1==0 && l2==0){
     GirarI1();            //Gira a la izquierda con velocidad normal
   }
 //Desviado un poco a la derecha
-  if(l4==0 && l1==1 && l5==1 || l4==0){
-    GirarD1();
+  if(l4==0 && l1==1 && l5==1 || l4==0 || l4==0 && l3==0 || l4==0 && l5==0){
+    GirarD1();            //Gira a la derecha con velocidad normal
   }
 
 //90° Izquierda
@@ -123,17 +124,17 @@ void GirarI1(){
 
 //Función para avanzar 
 void Avanzar(){
-  Md.setSpeed(115);
+  Md.setSpeed(105);
   Md.run(FORWARD);
-  Mi.setSpeed(115);
+  Mi.setSpeed(105);
   Mi.run(FORWARD);
 }
 
 //Función para ir de reversa
 void Retroceder(){
-  Md.setSpeed(115);
+  Md.setSpeed(105);
   Md.run(BACKWARD);
-  Mi.setSpeed(115);
+  Mi.setSpeed(105);
   Mi.run(BACKWARD);
 }
 
