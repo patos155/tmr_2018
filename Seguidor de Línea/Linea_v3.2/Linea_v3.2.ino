@@ -70,7 +70,7 @@ void loop() {
   }
 //Desviado un poco a la derecha
   if(l4==0 && l1==1 && l5==1 || l4==0 || l4==0 && l3==0 || l4==0 && l5==0){
-    GirarD1();            //Gira a la derecha con velocidad normal
+    GirarD1();            //Gira a la derecha con velocidad normal 
   }
 
 //90° Izquierda
