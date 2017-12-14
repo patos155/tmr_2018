@@ -115,16 +115,16 @@ void GirarI2(){
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
-  Md.setSpeed(150);
-  Md.run(BACKWARD);
+  Md.setSpeed(0);
+  Md.run(RELEASE);
   Mi.setSpeed(200);
   Mi.run(FORWARD);
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
-  Mi.setSpeed(150);
-  Mi.run(BACKWARD);
+  Mi.setSpeed(0);
+  Mi.run(RELEASE);
   Md.setSpeed(200);
   Md.run(FORWARD);
 }
