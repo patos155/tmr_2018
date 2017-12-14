@@ -51,6 +51,10 @@ void loop() {
   }
   
 //Muy desviado a la izquierda
+
+if (l3==0){
+  Avanzar();
+}
   if(l1==0 || l1==0 && l2==0 || l1==0 && l2==0 && l4==0){    //Curvas cerradas
     GirarI2();            //Gira a la izquierda con mayor velocidad normal
   }
@@ -76,11 +80,13 @@ void loop() {
 //90° Izquierda
   if(l1==0 && 12==0 || l1==0 && l2==0 && l3==0 || l1==0 && l2==0 && l3==0 && l4==0){
     GirarI2();            //Gira a la izquierda con mayor velocidad
+    delay(500);
   }
 
 //90° Derecha
   if(l5==0 && l4==0 || l5==0 && l4==0 && l3==0 || l5==0 && l4==0 && l3==0 && l2==0){
     GirarD2();            //Gira a la derecha con mayor velocidad
+    delay(500);
   }
 
 //Interseccion
