@@ -3,11 +3,11 @@ AF_DCMotor Md(2);   //motor derecho
 AF_DCMotor Mi(3);   //motor izquierdo
 
 //Pines del sensor infrarrojo
-int izq_1=52;       
-int izq_2=48;
-int centro_3=51;
-int der_4=50;
-int der_5=53;
+int izq_1=38;
+int izq_2=40;
+int centro_3=42;
+int der_4=39;
+int der_5=41;
 
 //Variables para guardar datos del sensor infrarrojo
 int l1=0;
@@ -15,7 +15,6 @@ int l2=0;
 int l3=0;
 int l4=0;
 int l5=0;
-
 
 void setup() {
   //Se inicia la comunicación Serial
@@ -37,7 +36,6 @@ void loop() {
   l3=digitalRead(centro_3);
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
-
   
 //Desacomodarse para recuperar línea
   if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l1==0 && l2==0 && l4==0 && l5==0){
@@ -52,6 +50,10 @@ void loop() {
 
 //Centrado
   if (l3==0){
+    Avanzar();
+  }
+
+  if(l1==1 && l2==1 && l3==1 && l4==1 && l5==1){
     Avanzar();
   }
 
@@ -81,13 +83,11 @@ void loop() {
 //90° Izquierda
   if(l1==0 && 12==0 || l1==0 && l2==0 && l3==0 || l1==0 && l2==0 && l3==0 && l4==0){
     GirarI2();            //Gira a la izquierda con mayor velocidad
-    delay(500);
   }
 
 //90° Derecha
   if(l5==0 && l4==0 || l5==0 && l4==0 && l3==0 || l5==0 && l4==0 && l3==0 && l2==0){
     GirarD2();            //Gira a la derecha con mayor velocidad
-    delay(500);
   }
 
 //Interseccion
@@ -99,7 +99,7 @@ void loop() {
 
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
-  Md.setSpeed(225);
+  Md.setSpeed(200);
   Md.run(BACKWARD);
   Mi.setSpeed(250);
   Mi.run(FORWARD);
@@ -107,7 +107,7 @@ void GirarD2(){
 
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
-  Mi.setSpeed(225);
+  Mi.setSpeed(200);
   Mi.run(BACKWARD);
   Md.setSpeed(250);
   Md.run(FORWARD);
@@ -115,33 +115,33 @@ void GirarI2(){
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
-  Md.setSpeed(0);
+  Md.setSpeed(120);
   Md.run(RELEASE);
-  Mi.setSpeed(200);
+  Mi.setSpeed(170);
   Mi.run(FORWARD);
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
-  Mi.setSpeed(0);
+  Mi.setSpeed(120);
   Mi.run(RELEASE);
-  Md.setSpeed(200);
+  Md.setSpeed(170);
   Md.run(FORWARD);
 }
 
 //Función para avanzar 
 void Avanzar(){
-  Md.setSpeed(105);
+  Md.setSpeed(100);
   Md.run(FORWARD);
-  Mi.setSpeed(105);
+  Mi.setSpeed(100);
   Mi.run(FORWARD);
 }
 
 //Función para ir de reversa
 void Retroceder(){
-  Md.setSpeed(105);
+  Md.setSpeed(80);
   Md.run(BACKWARD);
-  Mi.setSpeed(105);
+  Mi.setSpeed(80);
   Mi.run(BACKWARD);
 }
 
@@ -168,5 +168,6 @@ void imprimirDatos(){
   Serial.print("Centro:");Serial.println(l3);
   Serial.print("Der int:");Serial.println(l2);
   Serial.print("Der ext:");Serial.println(l1);
+  Serial.println("-----------------------------------");
 }
 
