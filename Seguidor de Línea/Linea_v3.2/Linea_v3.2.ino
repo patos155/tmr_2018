@@ -5,7 +5,7 @@ AF_DCMotor Mi(3);   //motor izquierdo
 //Pines del sensor infrarrojo
 int izq_1=38;
 int izq_2=40;
-int centro_3=42;
+int centro_3=42; 
 int der_4=39;
 int der_5=41;
 
@@ -101,7 +101,7 @@ void loop() {
 void GirarD2(){
   Md.setSpeed(200);
   Md.run(BACKWARD);
-  Mi.setSpeed(250);
+  Mi.setSpeed(255);
   Mi.run(FORWARD);
 }
 
@@ -109,39 +109,39 @@ void GirarD2(){
 void GirarI2(){
   Mi.setSpeed(200);
   Mi.run(BACKWARD);
-  Md.setSpeed(250);
+  Md.setSpeed(255);
   Md.run(FORWARD);
 }
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
   Md.setSpeed(120);
-  Md.run(RELEASE);
-  Mi.setSpeed(170);
+  Md.run(BACKWARD);
+  Mi.setSpeed(200);
   Mi.run(FORWARD);
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
   Mi.setSpeed(120);
-  Mi.run(RELEASE);
-  Md.setSpeed(170);
+  Mi.run(BACKWARD);
+  Md.setSpeed(200);
   Md.run(FORWARD);
 }
 
 //Función para avanzar 
 void Avanzar(){
-  Md.setSpeed(100);
+  Md.setSpeed(85);
   Md.run(FORWARD);
-  Mi.setSpeed(100);
+  Mi.setSpeed(85);
   Mi.run(FORWARD);
 }
 
 //Función para ir de reversa
 void Retroceder(){
-  Md.setSpeed(80);
+  Md.setSpeed(85);
   Md.run(BACKWARD);
-  Mi.setSpeed(80);
+  Mi.setSpeed(85);
   Mi.run(BACKWARD);
 }
 
