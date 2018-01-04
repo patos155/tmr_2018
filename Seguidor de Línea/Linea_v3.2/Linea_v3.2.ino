@@ -49,7 +49,7 @@ void loop() {
   }
 
 //Centrado
-  if (l3==0){
+  if (l3==0 || l2==0 && l4==0){
     Avanzar();
   }
 
