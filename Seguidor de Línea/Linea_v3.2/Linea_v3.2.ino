@@ -37,7 +37,7 @@ void loop() {
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
   
-//Desacomodarse para recuperar línea
+/*//Desacomodarse para recuperar línea
   if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l1==0 && l2==0 && l4==0 && l5==0){
     Quieto();             //Se detiene
     delay(500);
@@ -46,6 +46,11 @@ void loop() {
     Recuperar();          //Se desvia un poco para después encontrar nuevamente la línea
     delay(500);
     //imprimirDatos();
+  }*/
+
+//Subida (puede perder la línea)
+  if(l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
+    Avanzar();
   }
 
 //Centrado
@@ -91,7 +96,7 @@ void loop() {
   }
 
 //Interseccion
-  if(l2==0 && l4==0){     //Si se encuentra una intersección
+  if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0){     //Si se encuentra una intersección
     Avanzar();            //Avanza hacia adelante (por el momento)
   }
 
