@@ -36,17 +36,6 @@ void loop() {
   l3=digitalRead(centro_3);
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
-  
-/*//Desacomodarse para recuperar línea
-  if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0 || l1==0 && l2==0 && l4==0 && l5==0){
-    Quieto();             //Se detiene
-    delay(500);
-    Retroceder();         //Va hacia atrás
-    delay(500);
-    Recuperar();          //Se desvia un poco para después encontrar nuevamente la línea
-    delay(500);
-    //imprimirDatos();
-  }*/
 
 //Subida (puede perder la línea)
   if(l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
@@ -54,10 +43,11 @@ void loop() {
   }
 
 //Centrado
-  if (l3==0 || l2==0 && l4==0){
+  if (l3==0){
     Avanzar();
   }
 
+//Línea cortada
   if(l1==1 && l2==1 && l3==1 && l4==1 && l5==1){
     Avanzar();
   }
@@ -96,7 +86,7 @@ void loop() {
   }
 
 //Interseccion
-  if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0){     //Si se encuentra una intersección
+  if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 ){     //Si se encuentra una intersección
     Avanzar();            //Avanza hacia adelante (por el momento)
   }
 
@@ -142,7 +132,7 @@ void Avanzar(){
   Mi.run(FORWARD);
 }
 
-//Función para ir de reversa
+/*//Función para ir de reversa
 void Retroceder(){
   Md.setSpeed(85);
   Md.run(BACKWARD);
@@ -157,7 +147,7 @@ void Recuperar(){
   Mi.setSpeed(0);
   Mi.run(RELEASE);
 }
-
+*/
 //Función para detenerse
 void Quieto(){
   Md.setSpeed(0);
