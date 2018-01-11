@@ -20,7 +20,7 @@ int l5=0;
 int Trig=24;
 int Echo=25;
 
-float dist;
+int dist;
 
 void setup() {
   //Se inicia la comunicación Serial
@@ -124,7 +124,7 @@ void loop() {
        Mi.run(RELEASE);
        delay(100);
        //AVANZA ////////////////////////////////////////////////////////
-        Md.setSpeed(250);
+       Md.setSpeed(250);
        Md.run(FORWARD);
        Mi.setSpeed(250);
        Mi.run(FORWARD);
