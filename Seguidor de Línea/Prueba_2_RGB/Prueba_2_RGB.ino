@@ -1,16 +1,12 @@
-#include <Wire.h>
-#include <SFE_ISL29125.h>
-#include <SoftwareWire.h>
+#include <Wire.h>           //Libreria para usar la comuniación I2C
+#include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
+#include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
 
-SFE_ISL29125 RGB_sensor;
+SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 
-SoftwareWire myWire( 4, 5);
+SoftwareWire myWire( 4, 5);   //Configurar pines 4(SDA) y 5(SCL) con I2C
 
-int rojo=0;
-int verde=0;
-int azul=0;
-int x=0;
-
+//Direcciones del 2° sensor
 #define _addr 0x44
 #define DEVICE_ID 0x00
 #define CFG1_MODE_RGB 0x05
@@ -22,19 +18,26 @@ int x=0;
 #define CONFIG_3 0x03
 #define STATUS 0x08 
 
-uint16_t r=0;
-uint16_t v=0;
-uint16_t a=0;
+//Variables de ambos sensores RGB
+//1° sensor RGB
+uint16_t r1=0;
+uint16_t v1=0;
+uint16_t a1=0;
+
+//2° sensor RGB
+uint16_t r2=0;
+uint16_t v2=0;
+uint16_t a2=0;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600);       //Iniciar comunicación Serial
 
-  if (RGB_sensor.init())
+  if (RGB_sensor.init())    //Iniciar 1° sensor RGB
   {
     Serial.println("Sensor 1 iniciado");
   }
 
-  if(init2()){
+  if(init2()){              //Iniciar 2° sensor RGB
     Serial.println("Sensor 2 iniciado");
   }
   
@@ -42,28 +45,33 @@ void setup() {
 
 void loop() {
 
-  unsigned int red = RGB_sensor.readRed();
-  unsigned int green = RGB_sensor.readGreen();
-  unsigned int blue = RGB_sensor.readBlue();
+  //Valores del 1° sensor RGB
+  r1 = RGB_sensor.readRed();
+  v1 = RGB_sensor.readGreen();
+  a1 = RGB_sensor.readBlue();
+
+  //Valores del 2° sensor RGB
+  r2 = read16(0x0B);
+  v2 = read16(0x09);
+  a2 = read16(0x0D);
   
-  // Print out readings, change HEX to DEC if you prefer decimal output
-  Serial.print("Red: "); Serial.println(red,DEC);
-  Serial.print("Green: "); Serial.println(green,DEC);
-  Serial.print("Blue: "); Serial.println(blue,DEC);
+  //Imprimir valores del 1° RGB (en decimal)
+  Serial.print("Rojo 1: "); Serial.println(r1,DEC);
+  Serial.print("Verde 1: "); Serial.println(v1,DEC);
+  Serial.print("Azul 1: "); Serial.println(a1,DEC);
   Serial.println();
 
-  r=read16(0x0B);
-  v=read16(0x09);
-  a=read16(0x0D);
-  Serial.print("Rojo 2: ");Serial.println(r);
-  Serial.print("Verde 2: ");Serial.println(v);
-  Serial.print("Azul 2: ");Serial.println(a);
+  //Imprimir valores del 2° RGB
+  Serial.print("Rojo 2: ");Serial.println(r2);
+  Serial.print("Verde 2: ");Serial.println(v2);
+  Serial.print("Azul 2: ");Serial.println(a2);
   Serial.println("-----------------------------");
   
   delay(1000);
   
 }
 
+//Funciones para configurar y leer el 2° RGB///////////////////////
 uint16_t read16(uint8_t reg)
 {
   uint16_t data = 0x0000;
