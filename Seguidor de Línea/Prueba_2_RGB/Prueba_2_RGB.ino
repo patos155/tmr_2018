@@ -4,7 +4,7 @@
 
 SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 
-SoftwareWire myWire( 4, 5);   //Configurar pines 4(SDA) y 5(SCL) con I2C
+SoftwareWire myWire( 4, 5);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Puede ser cualquier pin digital)
 
 //Direcciones del 2° sensor
 #define _addr 0x44                  //Dirección del sensor
