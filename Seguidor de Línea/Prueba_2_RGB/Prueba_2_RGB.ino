@@ -7,16 +7,16 @@ SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 SoftwareWire myWire( 4, 5);   //Configurar pines 4(SDA) y 5(SCL) con I2C
 
 //Direcciones del 2° sensor
-#define _addr 0x44
-#define DEVICE_ID 0x00
-#define CFG1_MODE_RGB 0x05
-#define CFG1_10KLUX 0x08
-#define CFG2_IR_ADJUST_HIGH 0x3F
-#define CFG_DEFAULT 0x00
-#define CONFIG_1 0x01
-#define CONFIG_2 0x02
-#define CONFIG_3 0x03
-#define STATUS 0x08 
+#define _addr 0x44                  //Definir para que sirve
+#define DEVICE_ID 0x00              //Definir para que sirve
+#define CFG1_MODE_RGB 0x05          //Definir para que sirve
+#define CFG1_10KLUX 0x08            //Definir para que sirve
+#define CFG2_IR_ADJUST_HIGH 0x3F    //Definir para que sirve
+#define CFG_DEFAULT 0x00            //Definir para que sirve
+#define CONFIG_1 0x01               //Definir para que sirve
+#define CONFIG_2 0x02               //Definir para que sirve
+#define CONFIG_3 0x03               //Definir para que sirve
+#define STATUS 0x08                 //Definir para que sirve
 
 //Variables de ambos sensores RGB
 //1° sensor RGB
