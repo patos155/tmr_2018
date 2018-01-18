@@ -1,9 +1,9 @@
 #include <Wire.h>           //Libreria para usar la comuniación I2C
 #include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
 #include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
-#include <AFMotor.h>        //Libreria para usar los motores
-AF_DCMotor Md(2);   //motor derecho
-AF_DCMotor Mi(3);   //motor izquierdo
+#include <ArduinoMotorShieldR3.h>   //Libreria para usar el motor shield
+
+ArduinoMotorShieldR3 motores;       //Creación de objeto para usar los motores en motor shield
 
 SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 SoftwareWire myWire( 4, 5);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Puede ser cualquier pin digital)
@@ -55,6 +55,9 @@ uint16_t a2=0;
 void setup() {
   //Se inicia la comunicación Serial
   Serial.begin(9600);
+
+  //Iniciar motores
+  motores.init();
 
   //Configurando pines del sensor infrarrojo como entradas
   pinMode(izq_1,INPUT);
@@ -141,70 +144,55 @@ void loop() {
 if(l3==0 && l2==0 && l4==0){
    Avanzar(); 
   }
+  
 }
 
-//velocidad máxima 250  
+//velocidad máxima 400
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
-  Md.setSpeed(100);
-  Md.run(BACKWARD);
-  Mi.setSpeed(150);
-  Mi.run(FORWARD);
+  motores.setM1Speed(-200);   //Motor derecho, 200 velocidad, giro hacia atrás
+  motores.setM2Speed(300);    //Motor izquierdo, 300 velocidad, giro hacia adelante
 }
 
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
-  Mi.setSpeed(100);
-  Mi.run(BACKWARD);
-  Md.setSpeed(150);
-  Md.run(FORWARD);
+  motores.setM1Speed(300);    //Motor derecho, 300 velocidad, giro hacia adelante
+  motores.setM2Speed(-200);   //Motor izquierdo, 200 velocidad, giro hacia atrás
 }
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
-  Md.setSpeed(120);
-  Md.run(BACKWARD);
-  Mi.setSpeed(200);
-  Mi.run(FORWARD);
+  motores.setM1Speed(-240);   //Motor derecho, 240 velocidad, giro hacia atrás
+  motores.setM2Speed(400);    //Motor izquierdo, 400 velocidad, giro hacia adelante
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
-  Mi.setSpeed(120);
-  Mi.run(BACKWARD);
-  Md.setSpeed(200);
-  Md.run(FORWARD);
+  motores.setM1Speed(400);    //Motor derecho, 400 velocidad, giro hacia adelante
+  motores.setM2Speed(-240);   //Motor izquierdo, 240 velocidad, giro hacia atrás
 }
 
 //Función para avanzar 
 void Avanzar(){
-  Md.setSpeed(85);
-  Md.run(FORWARD);
-  Mi.setSpeed(85);
-  Mi.run(FORWARD);
+  motores.setM1Speed(150);    //Motor derecho, 150 velocidad, giro hacia atrás
+  motores.setM2Speed(150);    //Motor izquierdo, 150 velocidad, giro hacia atrás
 }
 
 //Función para ir de reversa
 void Retroceder(){
-  Md.setSpeed(85);
-  Md.run(BACKWARD);
-  Mi.setSpeed(85);
-  Mi.run(BACKWARD);
+  motores.setM1Speed(150);    //Motor derecho, 150 velocidad, giro hacia adelante
+  motores.setM2Speed(150);    //Motor izquierdo, 150 velocidad, giro hacia adelante
 }
 
 //Función para desviarse un poco para luego recuperar la línea
 void Recuperar(){
-  Md.setSpeed(100);
-  Md.run(BACKWARD);
-  Mi.setSpeed(0);
-  Mi.run(RELEASE);
+  motores.setM1Speed(-200);   //Motor derecho, 200 de velocidad, giro hacia atrás
+  motores.setM2Speed(0);      //Motor izquierdo, 0 de velocidad
 }
 //Función para detenerse
 void Quieto(){
-  Md.setSpeed(0);
-  Md.run(RELEASE);
-  Mi.setSpeed(0);
-  Mi.run(RELEASE);
+  motores.setM1Speed(0);      //Motor derecho, 0 de velocidad
+  motores.setM2Speed(0);      //Motor izquierdo, 0 de velocidad
 }
 
 //Función para imprimir valores del sensor
