@@ -3,8 +3,8 @@
 #include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
 #include <AFMotor.h>        //Libreria para usar los motores DC
 
-AF_DCMotor Md(2);   //motor derecho (A)
-AF_DCMotor Mi(1);   //motor izquierdo (B)
+AF_DCMotor Md(2);   //motor derecho (B)
+AF_DCMotor Mi(1);   //motor izquierdo (A)
 
 SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 SoftwareWire myWire( 51, 50);   //Configurar pines 51(SDA) y 50(SCL) con I2C (Puede ser cualquier pin digital)
@@ -55,7 +55,7 @@ uint16_t a2=0;
 
 void setup() {
   //Se inicia la comunicación Serial
-  //Serial.begin(9600);
+  Serial.begin(9600);
 
   //Configurando pines del sensor infrarrojo como entradas
   pinMode(izq_1,INPUT);
@@ -73,7 +73,6 @@ void setup() {
   if(init2()){              //Iniciar 2° sensor RGB
     Serial.println("Sensor 2 iniciado");
   }
-
 }
 
 void loop() {
@@ -84,6 +83,16 @@ void loop() {
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
 
+  //Valores del 1° sensor RGB
+  r1 = RGB_sensor.readRed();
+  v1 = RGB_sensor.readGreen();
+  a1 = RGB_sensor.readBlue();
+
+  //Valores del 2° sensor RGB
+  r2 = read16(0x0B);
+  v2 = read16(0x09);
+  a2 = read16(0x0D);
+  
   //imprimirDatosInf();
   //imprimirDatosRGB();
   //delay(1000);
@@ -91,11 +100,6 @@ void loop() {
 //Subida (puede perder la línea)
   if(l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
     Quieto();
-  }
-
-//Centrado
-  if (l3==0){
-    Avanzar();
   }
 
 //Línea cortada
@@ -113,12 +117,12 @@ void loop() {
   }
 
 //CENTRADO  
-  if(l1==1 && l2==1 && l4==1 && l5==1){
-    Avanzar();            //Avanza hacia adelante
+  if(l1==1 && l2==1 && l4==1 && l5==1 || l3==0){
+    Avanzar();
   }
   
 //Desviado un poco a la izquierda
-  if(l2==0 && l5==1 && l1==1 || l2==0 || l2==0 && l3==0 || l1==0 && l2==0){
+  if(l2==0 && l5==1 && l1==1 || l2==0 || l2==0 && l3==0 || l2==0 && l1==0){
     GirarI1();            //Gira a la izquierda con velocidad normal
   }
 //Desviado un poco a la derecha
@@ -138,10 +142,10 @@ void loop() {
 
 //Interseccion
   if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 ){     //Si se encuentra una intersección
-    Avanzar();            //Avanza hacia adelante (por el momento)
+    Quieto();
   }
-if(l3==0 && l2==0 && l4==0){
-   Avanzar(); 
+  if(l3==0 && l2==0 && l4==0){
+    Quieto(); 
   }
   
 }
@@ -187,6 +191,7 @@ void Avanzar(){
   Mi.run(FORWARD);
 }
 
+/*
 //Función para ir de reversa
 void Retroceder(){
   Md.setSpeed(85);
@@ -201,7 +206,7 @@ void Recuperar(){
   Md.run(BACKWARD);
   Mi.setSpeed(0);
   Mi.run(RELEASE);
-}
+}*/
 
 //Función para detenerse
 void Quieto(){
