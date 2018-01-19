@@ -1,10 +1,10 @@
 #include <Wire.h>           //Libreria para usar la comuniación I2C
 #include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
 #include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
-#include <AFMotor.h>
+#include <AFMotor.h>        //Libreria para usar los motores DC
 
-AF_DCMotor Md(1);   //motor derecho
-AF_DCMotor Mi(2);   //motor izquierdo
+AF_DCMotor Md(2);   //motor derecho (A)
+AF_DCMotor Mi(1);   //motor izquierdo (B)
 
 SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 SoftwareWire myWire( 51, 50);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Puede ser cualquier pin digital)
@@ -55,7 +55,7 @@ uint16_t a2=0;
 
 void setup() {
   //Se inicia la comunicación Serial
-  Serial.begin(9600);
+  //Serial.begin(9600);
 
   //Configurando pines del sensor infrarrojo como entradas
   pinMode(izq_1,INPUT);
@@ -86,6 +86,7 @@ void loop() {
 
   //imprimirDatosInf();
   //imprimirDatosRGB();
+  //delay(1000);
 
 //Subida (puede perder la línea)
   if(l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
@@ -145,7 +146,7 @@ if(l3==0 && l2==0 && l4==0){
   
 }
 
-//velocidad máxima 400
+//velocidad máxima 255
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
   Md.setSpeed(200);
@@ -218,7 +219,6 @@ void imprimirDatosInf(){
   Serial.print("Der int:");Serial.println(l2);
   Serial.print("Der ext:");Serial.println(l1);
   Serial.println("-----------------------------------");
-  delay(1000);
 }
 
 //Función para imrpimir valores de ambos sensores RGB
@@ -233,9 +233,7 @@ void imprimirDatosRGB(){
   Serial.print("Rojo 2: ");Serial.println(r2);
   Serial.print("Verde 2: ");Serial.println(v2);
   Serial.print("Azul 2: ");Serial.println(a2);
-  Serial.println("-----------------------------");
-  
-  delay(1000);
+  Serial.println("-----------------------------------");
 }
 
 //Funciones para configurar y leer el 2° RGB///////////////////////
