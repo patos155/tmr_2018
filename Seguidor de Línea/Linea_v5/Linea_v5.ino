@@ -7,7 +7,7 @@ AF_DCMotor Md(2);   //motor derecho (A)
 AF_DCMotor Mi(1);   //motor izquierdo (B)
 
 SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
-SoftwareWire myWire( 51, 50);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Puede ser cualquier pin digital)
+SoftwareWire myWire( 51, 50);   //Configurar pines 51(SDA) y 50(SCL) con I2C (Puede ser cualquier pin digital)
 
 //SENSOR INFRARROJO
 //Pines del sensor infrarrojo
@@ -181,9 +181,9 @@ void GirarI1(){
 
 //Función para avanzar 
 void Avanzar(){
-  Md.setSpeed(95);
+  Md.setSpeed(85);
   Md.run(FORWARD);
-  Mi.setSpeed(95);
+  Mi.setSpeed(85);
   Mi.run(FORWARD);
 }
 
@@ -237,6 +237,7 @@ void imprimirDatosRGB(){
 }
 
 //Funciones para configurar y leer el 2° RGB///////////////////////
+//NO MODIFICAR
 uint16_t read16(uint8_t reg)
 {
   uint16_t data = 0x0000;
