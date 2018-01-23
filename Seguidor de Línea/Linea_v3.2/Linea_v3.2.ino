@@ -1,6 +1,6 @@
 #include <AFMotor.h>
-AF_DCMotor Md(2);   //motor derecho
-AF_DCMotor Mi(3);   //motor izquierdo
+AF_DCMotor Md(1);   //motor derecho
+AF_DCMotor Mi(2);   //motor izquierdo
 
 //Pines del sensor infrarrojo
 int izq_1=38;
