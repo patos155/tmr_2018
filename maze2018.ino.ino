@@ -58,9 +58,9 @@ AF_DCMotor motord_D(2); //motor derecho
        int izquierda=0;
        int atras=0;
     //velocidad de oruga
-       int ade_ordi=150;
+       int ade_ordi=140;
        int medioi=115;
-        int ade_ordd=200;
+        int ade_ordd=190;
        int mediod=150;
        //long dif_cm=0;
        
@@ -68,10 +68,12 @@ AF_DCMotor motord_D(2); //motor derecho
        String ul_giro="FR"; 
        String desvio="C";
     // espara para los giros
-       int t_giroi=3600;      //tiempo para los giros de 90°
-       int t_girod=3900;      //tiempo para los giros de 90°
-       int t_u=9700;
-       int ine=1800;         //
+       int t_giroi=4200;      //tiempo para los giros de 90°
+       int t_girod=5000;      //tiempo para los giros de 90°
+       int t_u=9500;
+       int ineD=2500;
+       int ineI=2800;        
+       int ine_ng=3000;       //inercia zona negra
        int esp_giro=4200;    //avanza despues de girar 180°
        //int t_giro_u=3500;   // tiempo para giros de 180°
        int tr=40;           // tiempo de retorno a la recta 
@@ -127,14 +129,14 @@ void regresa(){
 
 
 void loop() {
-   delay(2000);
+   //delay(2000);
    Serial.println("Sensores ");
    /*motori_D.setSpeed(ade_ordi); 
    motori_D.run(FORWARD);       
    motord_D.setSpeed(ade_ordd);  
    motord_D.run(FORWARD);
    */
-   
+  /* 
    v1=digitalRead(l1);
    v2=digitalRead(l2);
    v3=digitalRead(l3);
@@ -145,7 +147,7 @@ void loop() {
    Serial.println(v2);
    Serial.print("l3:");
    Serial.println(v3);
-     
+  */   
   
    ultra_D();
    ultra_R();
@@ -202,7 +204,7 @@ void loop() {
         //}
 
         //algoritmo para centrar
-        if(cm_L<3 || cm_R>=6){ 
+        if(cm_L<3 || cm_R>=6 && cm_R<d_enc){ 
            //dataFile.print("   cm_L<   ");
            // GIRA A LA DERECHA
            motori_D.setSpeed(ade_ordi);
@@ -231,7 +233,7 @@ void loop() {
            delay(500);
         }
         
-        if(cm_R<3 || cm_L>=6){
+        if(cm_R<3 || cm_L>=6 && cm_L<d_enc){
            //dataFile.print("   cm_L>6");
            //GIRA IZQUIERDA
            motori_D.setSpeed(ade_ordi);
@@ -274,7 +276,7 @@ void loop() {
        motori_D.run(FORWARD);        
        motord_D.setSpeed(ade_ordd);  
        motord_D.run(FORWARD);        
-       delay(ine); //avanza para centrar el giro
+       delay(ineD); //avanza para centrar el giro
        //gira a la derecha
        motori_D.setSpeed(ade_ordi);
        motori_D.run(FORWARD); 
@@ -308,7 +310,7 @@ void loop() {
        motori_D.run(FORWARD);        
        motord_D.setSpeed(ade_ordd);  
        motord_D.run(FORWARD);        
-       delay(ine); //avanza para centrar el giro
+       delay(ineI); //avanza para centrar el giro
        // Gira Izquierda
        motori_D.setSpeed(ade_ordi);
        motori_D.run(BACKWARD); 
@@ -340,7 +342,7 @@ void loop() {
        motori_D.run(FORWARD);        //polaridad de motor izquierdo
        motord_D.setSpeed(ade_ordd);  //velocidad de motor derecho
        motord_D.run(FORWARD);        //polaridad de motor  derecho
-       delay(ine); //avanza para centrar el giro
+       delay(ineI); //avanza para centrar el giro
        motori_D.setSpeed(ade_ordi);//velocidad de motor izquierdo
        motori_D.run(BACKWARD); //polaridad de motor izquierdo
        motord_D.setSpeed(ade_ordd);//velocidad de motor derecho
@@ -369,7 +371,7 @@ void loop() {
        motori_D.run(FORWARD);        //polaridad de motor izquierdo
        motord_D.setSpeed(ade_ordd);  //velocidad de motor derecho
        motord_D.run(FORWARD);        //polaridad de motor  derecho
-       delay(ine); //avanza para centrar el giro
+       delay(ineI); //avanza para centrar el giro
        motori_D.setSpeed(ade_ordi);//velocidad de motor izquierdo
        motori_D.run(BACKWARD); //polaridad de motor izquierdo
        motord_D.setSpeed(ade_ordd);//velocidad de motor derecho
@@ -394,7 +396,7 @@ void loop() {
     //             1       1
     //          |             |
     if ((adelante==1) && (izquierda==1) && (derecha==1)){
-       delay(ine); //avanza para centrar el giro
+       delay(ineI); //avanza para centrar el giro
        motori_D.setSpeed(ade_ordi);//velocidad de motor izquierdo
        motori_D.run(BACKWARD); //polaridad de motor izquierdo
        motord_D.setSpeed(ade_ordd);//velocidad de motor derecho
@@ -434,9 +436,27 @@ void loop() {
         motord_D.run(FORWARD);        //polaridad de motor derecho
     }
 
-
+    //detecta negro
     if(l1==1 && l2==1 && l3==1){
-      
+       //avanza
+       motori_D.setSpeed(ade_ordi);  
+       motori_D.run(FORWARD);        
+       motord_D.setSpeed(ade_ordd);  
+       motord_D.run(FORWARD);        
+       delay(ine_ng);
+       //gira
+       motori_D.setSpeed(ade_ordi);
+       motori_D.run(FORWARD); 
+       motord_D.setSpeed(ade_ordi);
+       motord_D.run(BACKWARD);
+       delay(t_u);
+       alto();
+       ul_giro="U";
+       //avanza
+       motori_D.setSpeed(ade_ordi);  
+       motori_D.run(FORWARD);        
+       motord_D.setSpeed(ade_ordd);  
+       motord_D.run(FORWARD); 
     }
 
 }
