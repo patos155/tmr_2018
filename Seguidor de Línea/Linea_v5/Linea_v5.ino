@@ -1,18 +1,21 @@
 #include <Wire.h>           //Libreria para usar la comuniación I2C
 #include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
 #include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
-#include <AFMotor.h>        //Libreria para usar los motores DC
+//#include <AFMotor.h>        //Libreria para usar los motores DC
+#include <ArduinoMotorShieldR3.h>
+ oe charly!! soy dedos
+ArduinoMotorShieldR3 motores;
 
-AF_DCMotor Md(2);   //motor derecho (B)
-AF_DCMotor Mi(1);   //motor izquierdo (A)
+//AF_DCMotor Md(1);   //motor derecho (B)
+//AF_DCMotor Mi(2);   //motor izquierdo (A)
 
 SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 SoftwareWire myWire( 51, 50);   //Configurar pines 51(SDA) y 50(SCL) con I2C (Puede ser cualquier pin digital)
 
 //SENSOR INFRARROJO
 //Pines del sensor infrarrojo
-int izq_1=38;
-int izq_2=40;
+int izq_1=38;                   //Verde
+int izq_2=40;                   //
 int centro_3=42;
 int der_4=39;
 int der_5=41;
@@ -57,6 +60,9 @@ void setup() {
   //Se inicia la comunicación Serial
   Serial.begin(9600);
 
+  //Iniciar motores
+  motores.init();
+
   //Configurando pines del sensor infrarrojo como entradas
   pinMode(izq_1,INPUT);
   pinMode(izq_2,INPUT);
@@ -67,11 +73,11 @@ void setup() {
   //Iniciar ambos sensores RGB
   if (RGB_sensor.init())    //Iniciar 1° sensor RGB
   {
-    Serial.println("Sensor 1 iniciado");
+    Serial.println("Sensor 1 RGB iniciado");
   }
 
   if(init2()){              //Iniciar 2° sensor RGB
-    Serial.println("Sensor 2 iniciado");
+    Serial.println("Sensor 2 RGB iniciado");
   }
 }
 
@@ -92,7 +98,7 @@ void loop() {
   r2 = read16(0x0B);
   v2 = read16(0x09);
   a2 = read16(0x0D);
-  
+
   //imprimirDatosInf();
   //imprimirDatosRGB();
   //delay(1000);
@@ -113,21 +119,21 @@ void loop() {
   }
 //Muy desviado a la derecha
   if(l5==0 || l5==0 && l4==0 || l5==0 && l4==0 && l2==0){    //Curvas cerradas
-    GirarD2();            //Gira a la derecha con mayor velocidad normal 
+    GirarD2();            //Gira a la derecha con mayor velocidad normal
   }
 
-//CENTRADO  
+//CENTRADO
   if(l1==1 && l2==1 && l4==1 && l5==1 || l3==0){
     Avanzar();
   }
-  
+
 //Desviado un poco a la izquierda
   if(l2==0 && l5==1 && l1==1 || l2==0 || l2==0 && l3==0 || l2==0 && l1==0){
     GirarI1();            //Gira a la izquierda con velocidad normal
   }
 //Desviado un poco a la derecha
   if(l4==0 && l1==1 && l5==1 || l4==0 || l4==0 && l3==0 || l4==0 && l5==0){
-    GirarD1();            //Gira a la derecha con velocidad normal 
+    GirarD1();            //Gira a la derecha con velocidad normal
   }
 
 //90° Izquierda
@@ -145,50 +151,65 @@ void loop() {
     Quieto();
   }
   if(l3==0 && l2==0 && l4==0){
-    Quieto(); 
+    Quieto();
   }
-  
+
 }
 
-//velocidad máxima 255
+//Velocidad máxima de motores: 255
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
-  Md.setSpeed(200);
+  Serial.println("GirarD2");
+  motores.setM2Speed(-200);
+  motores.setM1Speed(255);
+  /*Md.setSpeed(200);
   Md.run(BACKWARD);
   Mi.setSpeed(255);
-  Mi.run(FORWARD);
+  Mi.run(FORWARD);*/
 }
 
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
-  Mi.setSpeed(200);
+  Serial.println("GirarI2");
+  motores.setM1Speed(-200);
+  motores.setM2Speed(255);
+  /*Mi.setSpeed(200);
   Mi.run(BACKWARD);
   Md.setSpeed(255);
-  Md.run(FORWARD);
+  Md.run(FORWARD);*/
 }
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
-  Md.setSpeed(120);
+  Serial.println("GirarD1");
+  motores.setM2Speed(-120);
+  motores.setM1Speed(200);
+  /*Md.setSpeed(120);
   Md.run(BACKWARD);
   Mi.setSpeed(200);
-  Mi.run(FORWARD);
+  Mi.run(FORWARD);*/
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
-  Mi.setSpeed(120);
+  Serial.println("GirarI1");
+  motores.setM1Speed(-120);
+  motores.setM2Speed(200);
+  /*Mi.setSpeed(120);
   Mi.run(BACKWARD);
   Md.setSpeed(200);
-  Md.run(FORWARD);
+  Md.run(FORWARD);*/
 }
 
-//Función para avanzar 
+//Función para avanzar
 void Avanzar(){
-  Md.setSpeed(85);
+  Serial.println("Avanza");
+  motores.setM2Speed(330);
+  motores.setM1Speed(100);
+  /*Md.setSpeed(85);
   Md.run(FORWARD);
   Mi.setSpeed(85);
-  Mi.run(FORWARD);
+  Mi.run(FORWARD);*/
 }
 
 /*
@@ -210,10 +231,12 @@ void Recuperar(){
 
 //Función para detenerse
 void Quieto(){
-  Md.setSpeed(0);
+  motores.setM2Speed(0);
+  motores.setM1Speed(0);
+  /*Md.setSpeed(0);
   Md.run(RELEASE);
   Mi.setSpeed(0);
-  Mi.run(RELEASE);
+  Mi.run(RELEASE);*/
 }
 
 //Función para imprimir valores del sensor
@@ -250,7 +273,7 @@ uint16_t read16(uint8_t reg)
   myWire.beginTransmission(_addr);
   myWire.write(reg);
   myWire.endTransmission();
-  
+
   myWire.beginTransmission(_addr);
   myWire.requestFrom(_addr, (uint8_t)2); // request 2 bytes of data
   data = myWire.read();
@@ -264,23 +287,23 @@ bool init2()
 {
   bool ret = true;
   uint8_t data = 0x00;
-  
+
   // Start I2C
   myWire.begin();
-  
+
   // Check device ID
   data = read8(DEVICE_ID);
   if (data != 0x7D)
   {
     ret &= false;
   }
-  
+
   // Reset registers
   ret &= reset();
-  
+
   // Set to RGB mode, 10k lux, and high IR compensation
   ret &= config2(CFG1_MODE_RGB | CFG1_10KLUX, CFG2_IR_ADJUST_HIGH, CFG_DEFAULT);
-  
+
   return ret;
 }
 
@@ -288,14 +311,14 @@ bool config2(uint8_t config1, uint8_t config2, uint8_t config3)
 {
   bool ret = true;
   uint8_t data = 0x00;
-  
+
   // Set 1st configuration register
   write8(CONFIG_1, config1);
   // Set 2nd configuration register
   write8(CONFIG_2, config2);
   // Set 3rd configuration register
   write8(CONFIG_3, config3);
-  
+
   // Check if configurations were set correctly
   data = read8(CONFIG_1);
   if (data != config1)
@@ -324,7 +347,7 @@ uint8_t read8(uint8_t reg)
   myWire.requestFrom(_addr,(uint8_t)1);
   uint8_t data = myWire.read();
   myWire.endTransmission();
-  
+
   return data;
 }
 
@@ -351,7 +374,6 @@ void write8(uint8_t reg, uint8_t data)
   myWire.write(reg);
   myWire.write(data);
   myWire.endTransmission();
-  
+
   return;
 }
-
