@@ -167,7 +167,7 @@ void GirarD2(){
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
   //Serial.println("GirarI2");
-  motores.setM1Speed(-33); //-133
+  motores.setM1Speed(-133); //-133
   motores.setM2Speed(400);  //400
   /*Mi.setSpeed(200);
   Mi.run(BACKWARD);
@@ -189,8 +189,8 @@ void GirarD1(){
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
   //Serial.println("GirarI1");
-  motores.setM1Speed(-80);  //-80
-  motores.setM2Speed(314);  //314
+  motores.setM1Speed(-120);  //-80
+  motores.setM2Speed(354);  //314
   /*Mi.setSpeed(120);
   Mi.run(BACKWARD);
   Md.setSpeed(200);
