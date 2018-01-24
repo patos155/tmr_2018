@@ -152,7 +152,7 @@ void loop() {
   
 }
 
-//Velocidad máxima de motores: 255
+//Velocidad máxima de motores: 400
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
   //Serial.println("GirarD2");
@@ -167,7 +167,7 @@ void GirarD2(){
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
   //Serial.println("GirarI2");
-  motores.setM1Speed(-133); //-133
+  motores.setM1Speed(-33); //-133
   motores.setM2Speed(400);  //400
   /*Mi.setSpeed(200);
   Mi.run(BACKWARD);
@@ -179,7 +179,7 @@ void GirarI2(){
 void GirarD1(){
   //Serial.println("GirarD1");
   motores.setM2Speed(-188); //-188
-  motores.setM1Speed(133);  //133
+  motores.setM1Speed(180);  //133
   /*Md.setSpeed(120);
   Md.run(BACKWARD);
   Mi.setSpeed(200);
