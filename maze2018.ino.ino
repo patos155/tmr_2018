@@ -68,12 +68,12 @@ AF_DCMotor motord_D(2); //motor derecho
        String ul_giro="FR"; 
        String desvio="C";
     // espara para los giros
-       int t_giroi=4200;      //tiempo para los giros de 90°
-       int t_girod=5000;      //tiempo para los giros de 90°
-       int t_u=9500;
-       int ineD=2500;
-       int ineI=2800;        
-       int ine_ng=3000;       //inercia zona negra
+       int t_giroi=3950;      //tiempo para los giros de 90°
+       int t_girod=4300;      //tiempo para los giros de 90°
+       int t_u=10500;
+       int ineD=2300;
+       int ineI=2500;        
+       int ine_ng=1800;       //inercia zona negra
        int esp_giro=4200;    //avanza despues de girar 180°
        //int t_giro_u=3500;   // tiempo para giros de 180°
        int tr=40;           // tiempo de retorno a la recta 
@@ -136,11 +136,11 @@ void loop() {
    motord_D.setSpeed(ade_ordd);  
    motord_D.run(FORWARD);
    */
-  /* 
+  
    v1=digitalRead(l1);
    v2=digitalRead(l2);
    v3=digitalRead(l3);
-
+/*
    Serial.print("l1:");
    Serial.println(v1);
    Serial.print("l2:");
@@ -204,7 +204,7 @@ void loop() {
         //}
 
         //algoritmo para centrar
-        if(cm_L<3 || cm_R>=6 && cm_R<d_enc){ 
+        if(cm_L<5 || cm_R>=8 && cm_R<d_enc){ 
            //dataFile.print("   cm_L<   ");
            // GIRA A LA DERECHA
            motori_D.setSpeed(ade_ordi);
@@ -233,7 +233,7 @@ void loop() {
            delay(500);
         }
         
-        if(cm_R<3 || cm_L>=6 && cm_L<d_enc){
+        if(cm_R<5 || cm_L>=8 && cm_L<d_enc){
            //dataFile.print("   cm_L>6");
            //GIRA IZQUIERDA
            motori_D.setSpeed(ade_ordi);
@@ -437,7 +437,7 @@ void loop() {
     }
 
     //detecta negro
-    if(l1==1 && l2==1 && l3==1){
+    if(v1==1 && v2==1 && v3==1){
        //avanza
        motori_D.setSpeed(ade_ordi);  
        motori_D.run(FORWARD);        
@@ -446,9 +446,9 @@ void loop() {
        delay(ine_ng);
        //gira
        motori_D.setSpeed(ade_ordi);
-       motori_D.run(FORWARD); 
+       motori_D.run(BACKWARD); 
        motord_D.setSpeed(ade_ordi);
-       motord_D.run(BACKWARD);
+       motord_D.run(FORWARD);
        delay(t_u);
        alto();
        ul_giro="U";
