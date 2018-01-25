@@ -84,16 +84,6 @@ void loop() {
   l3=digitalRead(centro_3);
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
-
-  //Valores del 1° sensor RGB
-  r1 = RGB_sensor.readRed();
-  v1 = RGB_sensor.readGreen();
-  a1 = RGB_sensor.readBlue();
-
-  //Valores del 2° sensor RGB
-  r2 = read16(0x0B);
-  v2 = read16(0x09);
-  a2 = read16(0x0D);
   
   //imprimirDatosInf();
   //imprimirDatosRGB();
@@ -144,10 +134,32 @@ void loop() {
 
 //Interseccion
   if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 ){     //Si se encuentra una intersección
-    Quieto();
+    leerRGB();                                  //Lee los colores que los sensores detectan
+    if(v1<1000 && v1<r1 && v1<a1){                        //Si verde es mayor a 1000 y menor a rojo y azul
+      GirarD2();
+      delay(1500);                                          //Da vuelta hacia la derecha
+    }else{
+      if(v2<1000 && v2<r2 && v2<a2){                      //Si verde es mayor a 1000 y menor a rojo y azul
+        GirarI2();                                          //Da vuelta hacia la izquierda
+        delay(1500);
+      }else{                                              //Si no detecta ningun verde
+        Avanzar();
+      }
+    }
   }
   if(l3==0 && l2==0 && l4==0){
-    Quieto(); 
+    leerRGB();                                  //Lee los colores que los sensores detectan
+    if(v1<1000 && v1<r1 && v1<a1){                        //Si verde es mayor a 1000 y menor a rojo y azul
+      GirarD2();
+      delay(1500);                                          //Da vuelta hacia la derecha
+    }else{
+      if(v2<1000 && v2<r2 && v2<a2){                      //Si verde es mayor a 1000 y menor a rojo y azul
+        GirarI2();                                          //Da vuelta hacia la izquierda
+        delay(1500);
+      }else{                                              //Si no detecta ningun verde
+        Avanzar();
+      }
+    }
   }
   
 }
@@ -235,6 +247,19 @@ void Quieto(){
   Mi.run(RELEASE);*/
 }
 
+//Funcion para leer los colores de ambos sensores RGB
+void leerRGB(){
+  //Valores del 1° sensor RGB
+  r1 = RGB_sensor.readRed();
+  v1 = RGB_sensor.readGreen();
+  a1 = RGB_sensor.readBlue();
+
+  //Valores del 2° sensor RGB
+  r2 = read16(0x0B);
+  v2 = read16(0x09);
+  a2 = read16(0x0D);
+}
+
 //Función para imprimir valores del sensor
 void imprimirDatosInf(){
   Serial.print("Izq ext:");Serial.println(l5);
@@ -259,6 +284,8 @@ void imprimirDatosRGB(){
   Serial.print("Azul 2: ");Serial.println(a2);
   Serial.println("-----------------------------------");
 }
+
+
 
 //Funciones para configurar y leer el 2° RGB///////////////////////
 //NO MODIFICAR
