@@ -50,6 +50,9 @@ uint16_t r2=0;
 uint16_t v2=0;
 uint16_t a2=0;
 
+bool derecha=false;
+bool izquierda=false;
+
 // negro=0 blanco=1
 
 void setup() {
@@ -135,29 +138,39 @@ void loop() {
 //Interseccion
   if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 ){     //Si se encuentra una intersección
     leerRGB();                                  //Lee los colores que los sensores detectan
-    if(v1<1000 && v1<r1 && v1<a1){                        //Si verde es mayor a 1000 y menor a rojo y azul
+    if(v1<1000 && v1<r1 && v1<a1 && v2<1000 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
+      Retorno();                                            //Da media vuleta y vuelve a seguir la línea
+      delay(2000);
+    }else{
+      if(v1<1000 && v1<r1 && v1<a1 && v2>1000){                        //Si verde es mayor a 1000 y menor a rojo y azul
       GirarD2();
       delay(1500);                                          //Da vuelta hacia la derecha
-    }else{
-      if(v2<1000 && v2<r2 && v2<a2){                      //Si verde es mayor a 1000 y menor a rojo y azul
-        GirarI2();                                          //Da vuelta hacia la izquierda
-        delay(1500);
-      }else{                                              //Si no detecta ningun verde
-        Avanzar();
+      }else{
+        if(v2<1000 && v2<r2 && v2<a2 && v1>1000){                      //Si verde es mayor a 1000 y menor a rojo y azul
+          GirarI2();                                          //Da vuelta hacia la izquierda
+          delay(1500);
+        }else{                                              //Si no detecta ningun verde
+          Avanzar();
+        }
       }
     }
   }
   if(l3==0 && l2==0 && l4==0){
     leerRGB();                                  //Lee los colores que los sensores detectan
-    if(v1<1000 && v1<r1 && v1<a1){                        //Si verde es mayor a 1000 y menor a rojo y azul
+    if(v1<1000 && v1<r1 && v1<a1 && v2<1000 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
+      Retorno();                                            //Da media vuleta y vuelve a seguir la línea
+      delay(2000);
+    }else{
+      if(v1<1000 && v1<r1 && v1<a1 && v2>1000){                        //Si verde es mayor a 1000 y menor a rojo y azul
       GirarD2();
       delay(1500);                                          //Da vuelta hacia la derecha
-    }else{
-      if(v2<1000 && v2<r2 && v2<a2){                      //Si verde es mayor a 1000 y menor a rojo y azul
-        GirarI2();                                          //Da vuelta hacia la izquierda
-        delay(1500);
-      }else{                                              //Si no detecta ningun verde
-        Avanzar();
+      }else{
+        if(v2<1000 && v2<r2 && v2<a2 && v1>1000){                      //Si verde es mayor a 1000 y menor a rojo y azul
+          GirarI2();                                          //Da vuelta hacia la izquierda
+          delay(1500);
+        }else{                                              //Si no detecta ningun verde
+          Avanzar();
+        }
       }
     }
   }
@@ -218,6 +231,12 @@ void Avanzar(){
   Md.run(FORWARD);
   Mi.setSpeed(85);
   Mi.run(FORWARD);*/
+}
+
+//Funcióon para girar sobre su eje
+void Retorno(){
+  motores.setM1Speed(170);
+  motores.setM2Speed(-400);
 }
 
 /*
