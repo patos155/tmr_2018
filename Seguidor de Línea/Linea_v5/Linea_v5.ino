@@ -137,7 +137,7 @@ void loop() {
 
 //Interseccion
   if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 ){     //Si se encuentra una intersección
-    leerRGB();                                  //Lee los colores que los sensores detectan
+    /*leerRGB();                                  //Lee los colores que los sensores detectan
     if(v1<1000 && v1<r1 && v1<a1 && v2<1000 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
       Retorno();                                            //Da media vuleta y vuelve a seguir la línea
       delay(2000);
@@ -153,10 +153,11 @@ void loop() {
           Avanzar();
         }
       }
-    }
+    }*/
+    Quieto();
   }
   if(l3==0 && l2==0 && l4==0){
-    leerRGB();                                  //Lee los colores que los sensores detectan
+    /*leerRGB();                                  //Lee los colores que los sensores detectan
     if(v1<1000 && v1<r1 && v1<a1 && v2<1000 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
       Retorno();                                            //Da media vuleta y vuelve a seguir la línea
       delay(2000);
@@ -172,7 +173,8 @@ void loop() {
           Avanzar();
         }
       }
-    }
+    }*/
+    Quieto();
   }
   
 }
