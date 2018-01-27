@@ -88,9 +88,9 @@ void loop() {
   l4=digitalRead(der_4);
   l5=digitalRead(der_5);
   
-  //imprimirDatosInf();
+  imprimirDatosInf();
   //imprimirDatosRGB();
-  //delay(1000);
+  delay(1000);
 
 //Subida (puede perder la línea)
   if(l1==0 && l2==0 && l3==0 && l4==0 && l5==0){
@@ -136,28 +136,10 @@ void loop() {
   }
 
 //Interseccion
-  if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 ){     //Si se encuentra una intersección
+  if(l2==0 && l4==0 || l1==0 && l2==0 && l4==0 && l5==0 || l3==0 && l2==0 && l4==0 ){     //Si se encuentra una intersección
     /*leerRGB();                                  //Lee los colores que los sensores detectan
-    if(v1<1000 && v1<r1 && v1<a1 && v2<1000 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
-      Retorno();                                            //Da media vuleta y vuelve a seguir la línea
-      delay(2000);
-    }else{
-      if(v1<1000 && v1<r1 && v1<a1 && v2>1000){                        //Si verde es mayor a 1000 y menor a rojo y azul
-      GirarD2();
-      delay(1500);                                          //Da vuelta hacia la derecha
-      }else{
-        if(v2<1000 && v2<r2 && v2<a2 && v1>1000){                      //Si verde es mayor a 1000 y menor a rojo y azul
-          GirarI2();                                          //Da vuelta hacia la izquierda
-          delay(1500);
-        }else{                                              //Si no detecta ningun verde
-          Avanzar();
-        }
-      }
-    }*/
-    Quieto();
-  }
-  if(l3==0 && l2==0 && l4==0){
-    /*leerRGB();                                  //Lee los colores que los sensores detectan
+    imprimirRGB();
+    delay(800);
     if(v1<1000 && v1<r1 && v1<a1 && v2<1000 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
       Retorno();                                            //Da media vuleta y vuelve a seguir la línea
       delay(2000);
@@ -184,7 +166,7 @@ void loop() {
 void GirarD2(){
   //Serial.println("GirarD2");
   motores.setM2Speed(-314); //-314
-  motores.setM1Speed(170);  //170
+  motores.setM1Speed(210);  //170
   /*Md.setSpeed(200);
   Md.run(BACKWARD);
   Mi.setSpeed(255);
@@ -194,7 +176,7 @@ void GirarD2(){
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
   //Serial.println("GirarI2");
-  motores.setM1Speed(-133); //-133
+  motores.setM1Speed(-180); //-133
   motores.setM2Speed(400);  //400
   /*Mi.setSpeed(200);
   Mi.run(BACKWARD);
