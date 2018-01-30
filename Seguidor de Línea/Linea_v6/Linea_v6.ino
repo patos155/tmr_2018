@@ -1,3 +1,9 @@
+/*
+  CO
+
+
+
+*/
 #include <Wire.h>           //Libreria para usar la comuniación I2C
 #include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
 #include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
@@ -116,88 +122,77 @@ void loop(){
   dist=ping(Trig,Echo);
 
   //leerRGB();
-  //imprimirDatosInf();
+  imprimirDatosInf();
   //imprimirDatosRGB();
-  //delay(1000);
+  delay(1000);
 
-//Encontrar objeto
+/*//Encontrar objeto
   if(dist<=7 && dist>0){
     Quieto();
     delay(1000);
-  }
+  }*/
 
 //Línea cortada
   if(l1<=bco && l2<=bco && l3<=bco && l4<=bco && l5<=bco && l6<=bco && l7<=bco && l8<=bco){
     Avanzar();
   }
 
-  else if(l3>=neg && l4>=neg && l5<=bco || l2>=neg && l3>=neg){
-    GirarI3();
+  //CENTRADO  
+  else if(l1<=bco && l2<=bco && l3<=bco && l6<=bco && l7<=bco && l8<=bco || l4>=neg && l5>=neg){
+    Avanzar();
   }
 
-  else if(l6>=neg && l5>=neg && l4<=bco || l7>=neg && l6>=neg){
-    GirarD3();
+  else if(l4>=neg || l3>=neg && l4>=neg || l3>=neg){
+    GirarI1();
+  }
+
+  else if(l5>=neg || l5>=neg && l6>=neg || l6>=neg){
+    GirarD1();
   }
 
 //Muy desviado a la izquierda
-  else if(l1>=neg || l1>=neg && l2>=neg || l1>=neg && l2>=neg && l3>=neg || l1>=neg && l2>=neg && l3>=neg && l4>=neg){    //Curvas cerradas
+  else if(l2>=neg || l2>=neg && l3>=neg){    //Curvas cerradas
     GirarI2();            //Gira a la izquierda con mayor velocidad normal
   }
 //Muy desviado a la derecha
-  else if(l8>=neg || l8>=neg && l7>=neg || l8>=neg && l7>=neg && l6>=neg || l8>=neg && l7>=neg && l6>=neg && l5>=neg){    //Curvas cerradas
+  else if(l6>=neg || l6>=neg && l7>=neg){    //Curvas cerradas
     GirarD2();            //Gira a la derecha con mayor velocidad normal 
   }
 
-//CENTRADO  
-  if(l1<=bco && l2<=bco && l3<=bco && l6<=bco && l7<=bco && l8<=bco || l4>=neg && l5>=neg){
-    Avanzar();
-  }
-  
-//Desviado un poco a la izquierda
-  else if(l4>=neg && l5<=bco || l3>=neg && l5<=bco || l2>=neg && l5<=bco){
-    GirarI1();            //Gira a la izquierda con velocidad normal
-  }
-//Desviado un poco a la derecha
-  else if(l5>=neg && l4<=bco || l6>=neg && l4<=bco || l7>=neg && l4<=bco){
-    GirarD1();            //Gira a la derecha con velocidad normal 
+  else if(l1>=neg || l1>=neg && l2>=neg){
+    GirarI3();
   }
 
-/*90° Izquierda
-  if(l1==0 && 12==0 || l1==0 && l2==0 && l3==0 || l1==0 && l2==0 && l3==0 && l4==0){
-    GirarI2();            //Gira a la izquierda con mayor velocidad
+  else if(l8>=neg || l8>=neg && l7>=neg){
+    GirarD3();
   }
-
-//90° Derecha
-  if(l5==0 && l4==0 || l5==0 && l4==0 && l3==0 || l5==0 && l4==0 && l3==0 && l2==0){
-    GirarD2();            //Gira a la derecha con mayor velocidad
-  }
-*/
 
 //Interseccion
-  else if(l3>=neg && l6>=neg && (l1>=neg || l8>=neg)){     //Si se encuentra una intersección
+  else if(l1>=neg && l2>=neg && l3>=neg && l4>=neg && l5>=neg && l6>=neg && l7>=neg && l8>=neg || l2>=neg && l3>=neg && l6>=neg && l7>=neg){     //Si se encuentra una intersección
     Quieto();
-    delay(1000);
+    Serial.println("Leyendo RGB");
+    //delay(1000);
     leerRGB();                                  //Lee los colores que los sensores detectan
     //imprimirRGB();
     //delay(800);
     if(v1<150 && v1<r1 && v1<a1 && v2<120 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
       Retorno();                                            //Da media vuleta y vuelve a seguir la línea
-      delay(1000);
+      //delay(1000);
     }else{
       if(v1<150 && v1<r1 && v1<a1 && v2>120){                        //Si verde es mayor a 1000 y menor a rojo y azul
       GirarI2();
-      delay(250);                                          //Da vuelta hacia la izquierda
+      //delay(250);                                          //Da vuelta hacia la izquierda
       }else{
-        if(v2<120 && v2<r2 && v2<a2 && v1>150){                      //Si verde es mayor a 1000 y menor a rojo y azul
+        if(v2<120 && v2<r2 && v2<a2 && v1>150){                      //S8i verde es mayor a 1000 y menor a rojo y azul
           GirarD2();                                          //Da vuelta hacia la derecha
-          delay(250);
+          //delay(250);
         }else{                                              //Si no detecta ningun verde
           Avanzar();
         }
       }
     }
     Quieto();
-    delay(1000);
+    //delay(1000);
   }
   
 }
@@ -205,63 +200,63 @@ void loop(){
 //Velocidad máxima de motores: 400
 //Función para girar a la derecha con velocidad normal
 void GirarD3(){
-  //Serial.println("GirarD1");
-  motores.setM1Speed(-20); //-188
-  motores.setM2Speed(80);  //133
+  Serial.println("GirarD3");
+  motores.setM1Speed(-190); //-314
+  motores.setM2Speed(220);  //170
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI3(){
-  //Serial.println("GirarI1");
-  motores.setM2Speed(-20);  //-80
-  motores.setM1Speed(80);  //314
+  Serial.println("GirarI3");
+  motores.setM2Speed(-190); //-133
+  motores.setM1Speed(220);  //400
 }
 
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
-  //Serial.println("GirarD2");
-  motores.setM1Speed(-150); //-314
-  motores.setM2Speed(191);  //170
+  Serial.println("GirarD2");
+  motores.setM1Speed(-120); //-188
+  motores.setM2Speed(190);  //133
 }
 
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
-  //Serial.println("GirarI2");
-  motores.setM2Speed(-150); //-133
-  motores.setM1Speed(191);  //400
+  Serial.println("GirarI2");
+  motores.setM2Speed(-120);  //-80
+  motores.setM1Speed(190);  //314
 }
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
-  //Serial.println("GirarD1");
-  motores.setM1Speed(-80); //-188
-  motores.setM2Speed(150);  //133
+  Serial.println("GirarD1");
+  motores.setM1Speed(0); //-188
+  motores.setM2Speed(120);  //133
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
-  //Serial.println("GirarI1");
-  motores.setM2Speed(-80);  //-80
-  motores.setM1Speed(150);  //314
+  Serial.println("GirarI1");
+  motores.setM2Speed(0);  //-80
+  motores.setM1Speed(120);  //314
 }
 
 //Función para avanzar 
 void Avanzar(){
-  //Serial.println("Avanza");
-  motores.setM1Speed(100);  //125
-  motores.setM2Speed(100);  //110
+  Serial.println("Avanza");
+  motores.setM1Speed(120);  //125
+  motores.setM2Speed(120);  //110
 }
 
 //Funcióon para girar sobre su eje
 void Retorno(){
-  //Serial.println("Retorno");
+  Serial.println("Retorno");
   motores.setM2Speed(100);
   motores.setM1Speed(-100);
 }
 
 //Función para detenerse
 void Quieto(){
-  //Serial.println("Quieto");
+  Serial.println("Quieto");
   motores.setM1Speed(0);
   motores.setM2Speed(0);
 }
