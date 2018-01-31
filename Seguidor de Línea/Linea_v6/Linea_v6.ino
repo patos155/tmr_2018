@@ -1,9 +1,4 @@
-/*
-  CO
 
-
-
-*/
 #include <Wire.h>           //Libreria para usar la comuniación I2C
 #include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
 #include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
@@ -16,14 +11,14 @@ SoftwareWire myWire( 44, 45);   //Configurar pines 44(SDA) y 4(SCL) con I2C (Pue
 
 //SENSOR INFRARROJO
 //Pines del sensor infrarrojo
-int izq_1=A5;
-int izq_2=A8;
-int izq_3=A9;
-int centro_i=A10;
-int centro_d=A11;
-int der_6=A12;
-int der_7=A13;
-int der_8=A14;
+int izq_1=A8;
+int izq_2=A9;
+int izq_3=A10;
+int centro_i=A11;
+int centro_d=A12;
+int der_6=A13;
+int der_7=A14;
+int der_8=A15;
 
 //Variables donde se guardan las lecuturas del sensor infrarrojo 
 int l1=0;
@@ -36,8 +31,11 @@ int l7=0;
 int l8=0;
 
 //valores de blanco y negro
-int bco=650;
-int neg=750;
+int bco=710;    //660
+int neg=711;    //661
+
+bool vDer=false;
+bool vIzq=false;
 
 //SENSORES RGB
 //Direcciones del 2° sensor
@@ -91,7 +89,7 @@ void setup(){
   pinMode(der_7,INPUT);
   pinMode(der_8,INPUT);
 
-  //Iniciar ambos sensores RGB
+  /*/Iniciar ambos sensores RGB
   if (RGB_sensor.init())    //Iniciar 1° sensor RGB
   {
     Serial.println("Sensor 1 RGB iniciado");
@@ -99,7 +97,7 @@ void setup(){
 
   if(init2()){              //Iniciar 2° sensor RGB
     Serial.println("Sensor 2 RGB iniciado");
-  }
+  }*/
 
   //Configuración del sensor ultrasónico
   pinMode(Echo,INPUT);
@@ -122,141 +120,194 @@ void loop(){
   dist=ping(Trig,Echo);
 
   //leerRGB();
-  imprimirDatosInf();
+  //imprimirDatosInf();
   //imprimirDatosRGB();
-  delay(1000);
+  //delay(700);
 
-/*//Encontrar objeto
+/*/Encontrar objeto ultrasonico
   if(dist<=7 && dist>0){
     Quieto();
     delay(1000);
-  }*/
-
-//Línea cortada
-  if(l1<=bco && l2<=bco && l3<=bco && l4<=bco && l5<=bco && l6<=bco && l7<=bco && l8<=bco){
-    Avanzar();
   }
+*/
 
-  //CENTRADO  
-  else if(l1<=bco && l2<=bco && l3<=bco && l6<=bco && l7<=bco && l8<=bco || l4>=neg && l5>=neg){
-    Avanzar();
-  }
+//Linea chido v2
 
-  else if(l4>=neg || l3>=neg && l4>=neg || l3>=neg){
-    GirarI1();
-  }
+//Linea cortada
+if(l1<=bco && l2<=bco && l3<=bco && l4<=bco && l5<=bco && l6<=bco && l7<=bco && l8<=bco){
+  Avanzar();
+}
 
-  else if(l5>=neg || l5>=neg && l6>=neg || l6>=neg){
-    GirarD1();
-  }
+//Centrado
+ if(l4>=neg && l5>=neg){
+  Avanzar();
+}
+
+//Potencia mayor
+ if(l1>=neg && l2>=neg || l1>=neg){
+  GirarI3();
+}
+
+//Mayor potencia
+ if(l7>=neg && l8>=neg || l8>=neg){
+  GirarD3();
+}
+
+//Mayor Potencia
+ if(l1>=neg && l2>=neg && l3>=neg){ 
+  GirarI3();
+}
+//Mayor Potencia
+ if(l6>=neg && l7>=neg && l8>=neg){
+  GirarD3();
+}
 
 //Muy desviado a la izquierda
-  else if(l2>=neg || l2>=neg && l3>=neg){    //Curvas cerradas
-    GirarI2();            //Gira a la izquierda con mayor velocidad normal
-  }
+ if (l1>=neg && l2>=neg && l3>=neg && l4>=neg && l5>=neg || l1>=neg && l2>=neg && l3>=neg && l4>=neg){  
+  GirarI3();
+}
+
 //Muy desviado a la derecha
-  else if(l6>=neg || l6>=neg && l7>=neg){    //Curvas cerradas
-    GirarD2();            //Gira a la derecha con mayor velocidad normal 
-  }
+ if(l4>=neg && l5>=neg && l6>=neg && l7>=neg && l8>=neg || l5>=neg && l6>=neg && l7>=neg && l8>=neg){
+  GirarD3();
+}
 
-  else if(l1>=neg || l1>=neg && l2>=neg){
-    GirarI3();
-  }
+ if(l1>=neg && l2>=neg && l3>=neg && l4>=neg && l5>=neg && l6>=neg){
+  GirarI3();
+}
 
-  else if(l8>=neg || l8>=neg && l7>=neg){
-    GirarD3();
-  }
+ if(l3>=neg && l4>=neg && l5>=neg && l6>=neg && l7>=neg && l8>=neg){
+  GirarD3();
+}
 
-//Interseccion
-  else if(l1>=neg && l2>=neg && l3>=neg && l4>=neg && l5>=neg && l6>=neg && l7>=neg && l8>=neg || l2>=neg && l3>=neg && l6>=neg && l7>=neg){     //Si se encuentra una intersección
-    Quieto();
-    Serial.println("Leyendo RGB");
-    //delay(1000);
-    leerRGB();                                  //Lee los colores que los sensores detectan
-    //imprimirRGB();
-    //delay(800);
-    if(v1<150 && v1<r1 && v1<a1 && v2<120 && v2<r2 && v2<a2){     //Si ambos sensores detectan verde
-      Retorno();                                            //Da media vuleta y vuelve a seguir la línea
-      //delay(1000);
-    }else{
-      if(v1<150 && v1<r1 && v1<a1 && v2>120){                        //Si verde es mayor a 1000 y menor a rojo y azul
-      GirarI2();
-      //delay(250);                                          //Da vuelta hacia la izquierda
-      }else{
-        if(v2<120 && v2<r2 && v2<a2 && v1>150){                      //S8i verde es mayor a 1000 y menor a rojo y azul
-          GirarD2();                                          //Da vuelta hacia la derecha
-          //delay(250);
-        }else{                                              //Si no detecta ningun verde
-          Avanzar();
-        }
-      }
+ if(l1>=neg && l2>=neg && l3>=neg && l4>=neg && l5>=neg && l6>=neg && l7>=neg){
+  GirarI3();
+}
+
+ if(l2>=neg && l3>=neg && l4>=neg && l5>=neg && l6>=neg && l7>=neg && l8>=neg){
+  GirarD3();
+}
+
+//Menor potencia
+ if(l2>=neg && l3>=neg && l4>=neg || l2>=neg && l3>=neg && l4>=neg && l5>=neg){
+  GirarI2();
+}
+
+//Menor potencia
+ if(l5>=neg && l6>=neg && l7>=neg || l4>=neg && l5>=neg && l6>=neg && l7>=neg){
+  GirarD2();
+}
+
+//Potencia normal
+ if(l2>=neg && l3>=neg){
+  GirarI2();
+}
+
+//Potencia normal
+ if(l6>=neg && l7>=neg){  
+  GirarD2();
+}
+
+//Menor potencia
+ if(l5>=neg && l4>=neg){
+  GirarI1();
+}
+
+ if(l5>=neg && l6>=neg){  
+  GirarD1();
+}
+
+/*/Intersección 1
+  if(l3>=neg && l4>=neg && l5>=neg && l6>=neg){
+  Quieto();
+}*/
+
+//Quieto y leer RGB
+ if(l1>=neg && l2>=neg && l3>=neg && l4>=neg && l5>=neg && l6>=neg && l7>=neg && l8>=neg){
+  if(vIzq || vDer){
+    if(vDer){
+      GirarD3();
     }
+    if(vIzq){
+      GirarI3();
+    }
+  }else{
     Quieto();
-    //delay(1000);
   }
-  
+}
+
 }
 
 //Velocidad máxima de motores: 400
 //Función para girar a la derecha con velocidad normal
 void GirarD3(){
-  Serial.println("GirarD3");
-  motores.setM1Speed(-190); //-314
-  motores.setM2Speed(220);  //170
+  vDer=true;
+  //Serial.println("GirarD3");
+  motores.setM1Speed(-400); //-150
+  motores.setM2Speed(400);  //190
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI3(){
-  Serial.println("GirarI3");
-  motores.setM2Speed(-190); //-133
-  motores.setM1Speed(220);  //400
+  vIzq=true;
+  //Serial.println("GirarI3");
+  motores.setM2Speed(-400); //-150
+  motores.setM1Speed(400);  //190
 }
 
 //Función para girar a la derecha con mayor velocidad
 void GirarD2(){
-  Serial.println("GirarD2");
-  motores.setM1Speed(-120); //-188
-  motores.setM2Speed(190);  //133
+  //Serial.println("GirarD2");
+  motores.setM1Speed(-150); //-80
+  motores.setM2Speed(250);  //150
 }
 
 //Función para girar a la izquierda con mayor velocidad
 void GirarI2(){
-  Serial.println("GirarI2");
-  motores.setM2Speed(-120);  //-80
-  motores.setM1Speed(190);  //314
+  //Serial.println("GirarI2");
+  motores.setM2Speed(-150);  //-80
+  motores.setM1Speed(250);  //150
 }
 
 //Función para girar a la derecha con velocidad normal
 void GirarD1(){
-  Serial.println("GirarD1");
-  motores.setM1Speed(0); //-188
-  motores.setM2Speed(120);  //133
+  vDer=false;
+  //Serial.println("GirarD1");
+  motores.setM1Speed(-25); //0
+  motores.setM2Speed(120);  //50
 }
 
 //Función para girar a la izquierda con velocidad normal
 void GirarI1(){
-  Serial.println("GirarI1");
-  motores.setM2Speed(0);  //-80
-  motores.setM1Speed(120);  //314
+  vIzq=false;
+  //Serial.println("GirarI1");
+  motores.setM2Speed(-25);  //0
+  motores.setM1Speed(120);  //50
 }
 
 //Función para avanzar 
 void Avanzar(){
-  Serial.println("Avanza");
-  motores.setM1Speed(120);  //125
-  motores.setM2Speed(120);  //110
+  vIzq=false;
+  vDer=false;
+  //Serial.println("Avanza");
+  motores.setM1Speed(110);  //80
+  motores.setM2Speed(110);  //80
 }
 
 //Funcióon para girar sobre su eje
 void Retorno(){
-  Serial.println("Retorno");
+  vIzq=false;
+  vDer=false;
+  //Serial.println("Retorno");
   motores.setM2Speed(100);
   motores.setM1Speed(-100);
 }
 
 //Función para detenerse
 void Quieto(){
-  Serial.println("Quieto");
+  vIzq=false;
+  vDer=false;
+  //Serial.println("Quieto");
   motores.setM1Speed(0);
   motores.setM2Speed(0);
 }
