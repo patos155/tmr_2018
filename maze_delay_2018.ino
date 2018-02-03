@@ -29,6 +29,9 @@ AF_DCMotor motord_D(2); //motor derecho
        int l1 = 44; //Morado
        int l2 = 42; //Gris
        int l3 = 40; //Blanco
+   //Inclinación
+       int SI=53;
+    
       
        
    //variables de medicion de sensores
@@ -45,7 +48,7 @@ AF_DCMotor motord_D(2); //motor derecho
        int v2 = 0;
        int v3 = 0;    
     //Sensor de Inclinación 
-       //int sInc =    
+       int inclina=1;    
 
 
        
@@ -70,11 +73,11 @@ AF_DCMotor motord_D(2); //motor derecho
        String ul_giro="FR"; 
        String desvio="C";
     // espara para los giros
-       int t_giroi=4800;      //tiempo para los giros de 90°
-       int t_girod=4500;      //tiempo para los giros de 90°
+       int t_giroi=4400;      //tiempo para los giros de 90°
+       int t_girod=4400;      //tiempo para los giros de 90°
        int t_u=11800;
-       int ineD=2300;
-       int ineI=2500;        
+       int ineD=2000;
+       int ineI=2150;        
        int ine_ng=1500;       //inercia zona negra
        int esp_giro=4200;    //avanza despues de girar 180°
        //int t_giro_u=3500;   // tiempo para giros de 180°
@@ -107,6 +110,8 @@ void setup() {
       pinMode(l1,INPUT);
       pinMode(l2,INPUT);
       pinMode(l3,INPUT);
+   //Sensor de Inclinación
+     pinMode(SI,INPUT);  
    
    }
  
@@ -142,6 +147,8 @@ void loop() {
    v1=digitalRead(l1);
    v2=digitalRead(l2);
    v3=digitalRead(l3);
+
+   inclina=digitalRead(SI); 
 /*
    Serial.print("l1:");
    Serial.println(v1);
@@ -149,8 +156,9 @@ void loop() {
    Serial.println(v2);
    Serial.print("l3:");
    Serial.println(v3);
-  */   
-  
+  */  
+   Serial.print("Inclina:");
+   Serial.println(inclina);
    ultra_D();
    ultra_R();
    ultra_L();
@@ -186,10 +194,11 @@ void loop() {
    Serial.println(derecha);
    Serial.print("Pared Izquierda ");
    Serial.println(izquierda);
-   //delay(3000);
+  // delay(3000);
 
 
-
+   if(inclina == 1){
+    
 
    //Sin pared al frente y entre dos paredes avanza de frente alineandose a la IZQUIERDA
    //          |         |          |            |
@@ -266,7 +275,8 @@ void loop() {
         
         ul_giro="FT"+desvio;
    }     
-   
+
+   }
    //Pared al frente y a la izquierda gira a la derecha
    //          |----------|
    //          |    0    
@@ -429,7 +439,7 @@ void loop() {
         motori_D.run(FORWARD); 
         motord_D.setSpeed(ade_ordi);
         motord_D.run(BACKWARD);
-        delay(t_u);
+        delay(t_u-300);
         alto();
         ul_giro="U";
         motori_D.setSpeed(ade_ordi);  //velocidad de motor izquierdo
@@ -450,13 +460,13 @@ void loop() {
            motori_D.run(FORWARD);        
            motord_D.setSpeed(ade_ordd);  
            motord_D.run(FORWARD);        
-           delay(ine_ng-500);
+           delay(ine_ng-1200);
            //gira
            motori_D.setSpeed(ade_ordi);
            motori_D.run(BACKWARD); 
            motord_D.setSpeed(ade_ordi);
            motord_D.run(FORWARD);
-           delay(t_u);
+           delay(t_u+200);
            alto();
            ul_giro="U";
            //avanza
@@ -467,7 +477,6 @@ void loop() {
            delay(ine_ng+1000);
       }
     }
-
 }
    
 
