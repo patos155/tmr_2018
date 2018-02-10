@@ -6,8 +6,8 @@ ArduinoMotorShieldR3 motores;   //Declaración de los motores
 
 #define blanco 1
 #define negro 0
-#define velI 120
-#define velD 123
+#define velI 170
+#define velD 173
 
 //SENSOR INFRARROJO
 //Pines del sensor infrarrojo
@@ -40,7 +40,7 @@ int dl7=0;
 int dl8=0;
 
 //valores de blanco y negro
-int bco=600;
+int bco=620;  //600
 int neg=720;
 
 void setup(){
@@ -143,21 +143,24 @@ void loop() {
 
   //Curvas de 90°
   if(dl8==negro && dl7==negro && dl6==negro || dl8==negro && dl7==negro && dl6==negro && dl5==negro){
-    Moverse(50,200);
-    Moverse(-250,-250);
+    Moverse(-130,200);
+    //Moverse(-250,-250);
   }
 
   if(dl1==negro && dl2==negro && dl3==negro || dl1==negro && dl2==negro && dl3==negro && dl4==negro){
-    Moverse(200,50);
-    Moverse(-250,-250);
+    Moverse(200,-130);
+    //Moverse(-250,-250);
   }
 
   //Intersección
   if(dl1==negro && dl8==negro){
-    Moverse(0,0);
+    //Moverse(0,0);
     //delay(1000);
   }
 
+  //imprimirDatosInf();
+  //delay(800);
+  
 
 }
 //Movimiento de los motores
