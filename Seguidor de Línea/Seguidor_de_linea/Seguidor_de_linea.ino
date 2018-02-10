@@ -82,13 +82,80 @@ void loop() {
   if (l8<=bco){dl8=1;} else {dl8=0;}
   //Moverse en linea recta
   Moverse(velD,velI);
+  
+  /*
   //l3 detecta negro
   if(dl3==negro){
     Moverse(velD+20,velI-50);
   }
   //l5 detecta negro
-  if(dl5==negro){
+  if(dl6==negro){
     Moverse(velD-50,velI+20);
+  }
+  if(dl3==negro && dl2==negro && dl1==negro || dl4==negro && dl3==negro && dl2==negro && dl1==negro){
+    Moverse(velD+100,velI-130);
+  }
+  if(dl6==negro && dl7==negro && dl8==negro || dl5==negro && dl6==negro && dl7==negro && dl8==negro){
+    Moverse(velD-130,velI+100);
+  }
+  if(dl5==negro && dl4==negro && dl3==negro && dl2==negro && dl1==negro){
+    Moverse(velD+100,velI-130);
+  }
+  if(dl4==negro && dl5==negro && dl6==negro && dl7==negro && dl8==negro){
+    Moverse(velD-130,velI+100);
+  }
+  if(dl6==negro && dl5==negro && dl4==negro && dl3==negro && dl2==negro && dl1==negro){
+    Moverse(velD+120,velI-150);
+  }
+  if(dl3==negro && dl4==negro && dl5==negro && dl6==negro && dl7==negro && dl8==negro){
+    Moverse(velD-150,velI+120);
+  }*/
+
+
+  if(dl3==negro && dl6==negro){
+    Moverse(velD,velI);
+  }
+
+  //Muy desviado a la izquierda
+  if(dl8==negro && dl7==negro && dl3==negro){
+    Moverse(-250,200);
+  }
+
+  //Muy desviado a la derecha
+  if(dl1==negro && dl2==negro && dl6==negro){
+    Moverse(200,-250);
+  }
+
+  //Centrado
+  if(dl8==blanco && dl7==blanco && dl2==blanco && dl1==blanco){
+    Moverse(velD,velI);
+  }
+
+  //Ligeramente desviado a la izquierda
+  if(dl2==negro && dl8==blanco && dl1==blanco){
+    Moverse(200,-120);
+  }
+
+  //Ligeramente desviado a la derecha
+  if(dl7==negro && dl1==blanco && dl5==blanco){
+    Moverse(-120,200);
+  }
+
+  //Curvas de 90°
+  if(dl8==negro && dl7==negro && dl6==negro || dl8==negro && dl7==negro && dl6==negro && dl5==negro){
+    Moverse(50,200);
+    Moverse(-250,-250);
+  }
+
+  if(dl1==negro && dl2==negro && dl3==negro || dl1==negro && dl2==negro && dl3==negro && dl4==negro){
+    Moverse(200,50);
+    Moverse(-250,-250);
+  }
+
+  //Intersección
+  if(dl1==negro && dl8==negro){
+    Moverse(0,0);
+    //delay(1000);
   }
 
 
