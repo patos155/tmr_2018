@@ -6,8 +6,8 @@ ArduinoMotorShieldR3 motores;   //Declaración de los motores
 
 #define blanco 1
 #define negro 0
-#define velI 170
-#define velD 173
+#define velI 160
+#define velD 163
 
 //SENSOR INFRARROJO
 //Pines del sensor infrarrojo
@@ -82,35 +82,6 @@ void loop() {
   if (l8<=bco){dl8=1;} else {dl8=0;}
   //Moverse en linea recta
   Moverse(velD,velI);
-  
-  /*
-  //l3 detecta negro
-  if(dl3==negro){
-    Moverse(velD+20,velI-50);
-  }
-  //l5 detecta negro
-  if(dl6==negro){
-    Moverse(velD-50,velI+20);
-  }
-  if(dl3==negro && dl2==negro && dl1==negro || dl4==negro && dl3==negro && dl2==negro && dl1==negro){
-    Moverse(velD+100,velI-130);
-  }
-  if(dl6==negro && dl7==negro && dl8==negro || dl5==negro && dl6==negro && dl7==negro && dl8==negro){
-    Moverse(velD-130,velI+100);
-  }
-  if(dl5==negro && dl4==negro && dl3==negro && dl2==negro && dl1==negro){
-    Moverse(velD+100,velI-130);
-  }
-  if(dl4==negro && dl5==negro && dl6==negro && dl7==negro && dl8==negro){
-    Moverse(velD-130,velI+100);
-  }
-  if(dl6==negro && dl5==negro && dl4==negro && dl3==negro && dl2==negro && dl1==negro){
-    Moverse(velD+120,velI-150);
-  }
-  if(dl3==negro && dl4==negro && dl5==negro && dl6==negro && dl7==negro && dl8==negro){
-    Moverse(velD-150,velI+120);
-  }*/
-
 
   if(dl3==negro && dl6==negro){
     Moverse(velD,velI);
