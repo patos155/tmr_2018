@@ -20,14 +20,16 @@
 #include "Adafruit_MLX90614_Patos155.h"
 #include "SoftwareWire.h"
 
+SoftwareWire myWire(uint8_t sda=48,uint8_t scl=45);
+
+
 Adafruit_MLX90614_Patos155::Adafruit_MLX90614_Patos155(uint8_t i2caddr) {
   _addr = i2caddr;
-  Adafruit_MLX90614_Patos155::init();
 }
 
 
 boolean Adafruit_MLX90614_Patos155::begin(void) {
-  Adafruit_MLX90614_Patos155::myWire.begin();
+  myWire.begin();
 
   /*
   for (uint8_t i=0; i<0x20; i++) {
@@ -68,29 +70,21 @@ float Adafruit_MLX90614_Patos155::readTemp(uint8_t reg) {
   return temp;
 }
 /*********************************************************************/
-int Adafruit_MLX90614_Patos155::setSda_Scl(int x,int y){
-  Adafruit_MLX90614_Patos155::sda=x;
-  Adafruit_MLX90614_Patos155::scl=y;
-}
 
-boolean Adafruit_MLX90614_Patos155::init(void){
-  Adafruit_MLX90614_Patos155::myWire(Adafruit_MLX90614_Patos155::sda,Adafruit_MLX90614_Patos155::scl);
-  return true;
-}
 /*********************************************************************/
 
 uint16_t Adafruit_MLX90614_Patos155::read16(uint8_t a) {
   uint16_t ret;
 
-  Adafruit_MLX90614_Patos155::myWire.beginTransmission(_addr); // start transmission to device
-  Adafruit_MLX90614_Patos155::myWire.write(a); // sends register address to read from
-  Adafruit_MLX90614_Patos155::myWire.endTransmission(false); // end transmission
+  myWire.beginTransmission(_addr); // start transmission to device
+  myWire.write(a); // sends register address to read from
+  myWire.endTransmission(false); // end transmission
 
-  Adafruit_MLX90614_Patos155::myWire.requestFrom(_addr, (uint8_t)3);// send data n-bytes read
-  ret = Adafruit_MLX90614_Patos155::myWire.read(); // receive DATA
-  ret |= Adafruit_MLX90614_Patos155::myWire.read() << 8; // receive DATA
+  myWire.requestFrom(_addr, (uint8_t)3);// send data n-bytes read
+  ret = myWire.read(); // receive DATA
+  ret |= myWire.read() << 8; // receive DATA
 
-  uint8_t pec = Adafruit_MLX90614_Patos155::Wire.read();
+  uint8_t pec = myWire.read();
 
   return ret;
 }

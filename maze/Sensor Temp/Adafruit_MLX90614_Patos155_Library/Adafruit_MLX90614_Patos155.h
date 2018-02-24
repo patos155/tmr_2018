@@ -46,6 +46,8 @@
 #define MLX90614_ID2 0x3D
 #define MLX90614_ID3 0x3E
 #define MLX90614_ID4 0x3F
+/*#define sda 48
+#define scl 45*/
 
 
 class Adafruit_MLX90614_Patos155  {
@@ -53,14 +55,11 @@ class Adafruit_MLX90614_Patos155  {
   Adafruit_MLX90614_Patos155(uint8_t addr = MLX90614_I2CADDR);
   boolean begin();
   uint32_t readID(void);
-  int sda,scl;
-  boolean init();
-  int setSda_Scl(int x,int y);
+
   double readObjectTempC(void);
   double readAmbientTempC(void);
   double readObjectTempF(void);
   double readAmbientTempF(void);
-  SoftwareWire myWire(sda,scl);
 
  private:
   float readTemp(uint8_t reg);
