@@ -20,7 +20,7 @@
 #include "Adafruit_MLX90614_Patos155.h"
 #include "SoftwareWire.h"
 
-SoftwareWire myWire(uint8_t sda=48,uint8_t scl=45);
+SoftwareWire myWire(48,45);
 
 
 Adafruit_MLX90614_Patos155::Adafruit_MLX90614_Patos155(uint8_t i2caddr) {
