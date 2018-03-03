@@ -15,12 +15,11 @@
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   BSD license, all text above must be included in any redistribution
  ****************************************************/
-
-#include <Wire.h>
+ 
 #include <SoftwareWire.h>
-//#include <Adafruit_MLX90614.h>
+#include <Adafruit_MLX90614.h>
 
-/////////////////////////////
+//Direcciones del sensor
 #define MLX90614_I2CADDR 0x5A
 
 // RAM
@@ -44,14 +43,15 @@
 #define _addr 0x5A
 //////////////////////////////
 
-//Adafruit_MLX90614 mlx = Adafruit_MLX90614();
+//Pines 48 y 45 con comunicación i2c
+SoftwareWire myWire(48,45);
+
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
 void setup() {
   Serial.begin(9600);
-
-  if(begin1()){
-    Serial.println("Sensor 1 Iniciado");
-  }
+  Serial.println("Adafruit MLX90614 test");  
+  mlx.begin();  
 
   if(begin2()){
     Serial.println("Sensor 2 Iniciado");
@@ -60,10 +60,10 @@ void setup() {
 
 void loop() {
   Serial.println("Sensor 1");
-  Serial.print("Ambient = "); Serial.print(readAmbientTempC()); 
-  Serial.print("*C\tObject = "); Serial.print(readObjectTempC()); Serial.println("*C");
-  Serial.print("Ambient = "); Serial.print(readAmbientTempF()); 
-  Serial.print("*F\tObject = "); Serial.print(readObjectTempF()); Serial.println("*F\n");
+  Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempC()); 
+  Serial.print("*C\tObject = "); Serial.print(mlx.readObjectTempC()); Serial.println("*C");
+  Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempF()); 
+  Serial.print("*F\tObject = "); Serial.print(mlx.readObjectTempF()); Serial.println("*F\n");
   Serial.println("Sensor 2\n");
   Serial.print("Ambient = "); Serial.print(readAmbientTempC2()); 
   Serial.print("*C\tObject = "); Serial.print(readObjectTempC2()); Serial.println("*C");
@@ -72,3 +72,62 @@ void loop() {
   Serial.println("-----------------------------------------------------------");
   delay(1000);
 }
+
+
+//////Funciones para leer el segundo sensor
+boolean begin2() {
+  myWire.begin();
+
+  /*
+  for (uint8_t i=0; i<0x20; i++) {
+    Serial.print(i); Serial.print(" = ");
+    Serial.println(read16(i), HEX);
+  }
+  */
+  return true;
+}
+
+uint16_t read16(uint8_t a) {
+  uint16_t ret;
+
+  myWire.beginTransmission(_addr); // start transmission to device 
+  myWire.write(a); // sends register address to read from
+  myWire.endTransmission(); // end transmission
+
+  myWire.beginTransmission(_addr); // start transmission to device 
+  myWire.requestFrom(_addr, (uint8_t)3);// send data n-bytes read
+  ret = myWire.read(); // receive DATA
+  ret |= myWire.read() << 8; // receive DATA
+  myWire.endTransmission(); // end transmission
+
+  uint8_t pec = myWire.read();
+
+  return ret;
+}
+
+float readTemp(uint8_t reg) {
+  float temp;
+  
+  temp = read16(reg);
+  temp *= .02;
+  temp  -= 273.15;
+  return temp;
+}
+
+double readObjectTempF2() {
+  return (readTemp(MLX90614_TOBJ1) * 9 / 5) + 32;
+}
+
+double readAmbientTempF2() {
+  return (readTemp(MLX90614_TA) * 9 / 5) + 32;
+}
+
+double readObjectTempC2() {
+  return readTemp(MLX90614_TOBJ1);
+}
+
+double readAmbientTempC2() {
+  return readTemp(MLX90614_TA);
+}
+
+
