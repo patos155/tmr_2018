@@ -43,8 +43,8 @@
 #define _addr 0x5A
 //////////////////////////////
 
-//Pines 48 y 45 con comunicación i2c
-SoftwareWire myWire(48,45);
+//Pines 20 y 21 con comunicación i2c
+SoftwareWire myWire(20,21);
 
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
@@ -62,13 +62,9 @@ void loop() {
   Serial.println("Sensor 1");
   Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempC()); 
   Serial.print("*C\tObject = "); Serial.print(mlx.readObjectTempC()); Serial.println("*C");
-  Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempF()); 
-  Serial.print("*F\tObject = "); Serial.print(mlx.readObjectTempF()); Serial.println("*F\n");
-  Serial.println("Sensor 2\n");
+  Serial.println("\nSensor 2");
   Serial.print("Ambient = "); Serial.print(readAmbientTempC2()); 
   Serial.print("*C\tObject = "); Serial.print(readObjectTempC2()); Serial.println("*C");
-  Serial.print("Ambient = "); Serial.print(readAmbientTempF2()); 
-  Serial.print("*F\tObject = "); Serial.print(readObjectTempF2()); Serial.println("*F");
   Serial.println("-----------------------------------------------------------");
   delay(1000);
 }
@@ -90,16 +86,15 @@ boolean begin2() {
 uint16_t read16(uint8_t a) {
   uint16_t ret;
 
-  myWire.beginTransmission(_addr); // start transmission to device 
-  myWire.write(a); // sends register address to read from
-  myWire.endTransmission(); // end transmission
+  myWire.beginTransmission(_addr); // Comienza la transmisión del dispositivo 
+  myWire.write(a); // envía la dirección de registro para leer
+  myWire.endTransmission(); // Termina la transmisión
 
-  myWire.beginTransmission(_addr); // start transmission to device 
+  myWire.beginTransmission(_addr); // Comienza la transmisión del dispositivo 
   myWire.requestFrom(_addr, (uint8_t)3);// send data n-bytes read
-  ret = myWire.read(); // receive DATA
-  ret |= myWire.read() << 8; // receive DATA
-  myWire.endTransmission(); // end transmission
-
+  ret = myWire.read(); // Recibe datos
+  ret |= myWire.read() << 8; // Recibe datos
+  myWire.endTransmission(); // Termina la transmisión
   uint8_t pec = myWire.read();
 
   return ret;
