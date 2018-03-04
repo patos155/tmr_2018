@@ -65,6 +65,8 @@ AF_DCMotor motord_D(2); //motor derecho
 //---------------------------------------------------------------------------------------------------------------------
 //                                      Variables con parametros de funcionamiento
 //---------------------------------------------------------------------------------------------------------------------
+    // inicia ciclo
+       int inicio=0;
     // tiempo de espera para pruebas 
     int espera=3000;
     // distancia para encontrar las paredes (centimetros)
@@ -81,18 +83,23 @@ AF_DCMotor motord_D(2); //motor derecho
        int ade_ordd=190;
        int mediod=150;
        
-    // espara para los giros
+    //----------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------
+    // ////////////////////////////////////////////// espara para los giros
+    //----------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
        //tiempo para los giros de 90° Izquierda, Derecha y giro en U
-            int t_giroi=4100;      
-            int t_girod=4600;    
-            int t_u=11800;
+            int t_giroi=3450;      
+            int t_girod=3800;    
+            int t_ui=9000;
+            int t_ud=10500;
         // Tiempo de inercia (espera para comenzar el giro al detectar la falta de pared) Izquierda, Derecha y Zona Negra
-            int ineI=2150;        
-            int ineD=2000;
+            int ineI=1100;        
+            int ineD=1200;
             int ine_ng=1500; 
        //  Tiempo para avanzar al frente sin buscar paredes luego de efectuar un giro 
-            int esp_giro=4200;    //avanza despues de girar 180°
-            //int t_giro_u=3500;    ??
+            int esp_giro=3000;    //avanza despues de girar 180°
+            int espera_u=2000;   // ??
             //int tr=40;            ??
             //int giro=0;           ??
 
@@ -143,7 +150,34 @@ void setup() {
 void loop() {
 // --------------------------------------Lectura de sensores y calculos respectivos -------------------------------------------------------
   // Sensores ultrasonicos (distancia a la pared)
-       // lee sensores y determina distancia a las paredes
+       if (inicio==0){
+           for (int i=0;i<=100;i++){
+               lee();
+           }
+           inicio=1;
+       }
+
+   lee();
+   //muestra datos de sensores en el monitor serial
+   //muestra();
+
+   //ajuste para giros
+   //giro_izquierda();
+   //giro_derecha();
+   //giro_u();
+   //alto();
+   //delay(3000);
+   
+   
+   
+   // busca el camino 
+   busca();
+  
+}
+
+
+void lee(){
+         // lee sensores y determina distancia a las paredes
        ultra_D();
        ultra_R();
        ultra_L();
@@ -180,10 +214,64 @@ void loop() {
        // determina si encuentra una victima viva (diferencia de tempertura)
        dif_temp=temp2-temp1;
 
-   //muestra datos de sensores en el monitor serial
-   muestra();
-  
-//-----------------------------Movimientos derivados de la lectura de los sensores -----------------------------------------
+}
+
+//---------------------------------------------------------------------------------------------------------------------------
+//                                     muestra valores de lecturas en sensores
+//---------------------------------------------------------------------------------------------------------------------------
+void muestra(){
+    // ultrasonicos 
+    Serial.println("----------------------------------------------------------------------------------------------------------------");
+    Serial.print("delantero  ");
+    Serial.println(cm_D);
+    Serial.print("derecho  ");
+    Serial.println(cm_R);
+    Serial.print("Izquierdo ");
+    Serial.println(cm_L);
+    Serial.print("Pared delantera  ");
+    Serial.println(adelante);
+    Serial.print("Pared derecha  ");
+    Serial.println(derecha);
+    Serial.print("Pared Izquierda ");
+    Serial.println(izquierda);
+    delay(espera);
+   
+    //-Lectura de infrarojos (piso negro)
+    Serial.println("Infra rojos");
+    Serial.print("l1: ");
+    Serial.println(v1);
+    Serial.print("l2: ");
+    Serial.println(v2);
+    Serial.print("l3: ");
+    Serial.println(v3);
+    delay(espera);
+    // Inclinacion
+    Serial.println("Inclinacion");
+    Serial.println(inclina);
+    delay(espera);
+    // lectura de temperatura 
+    Serial.println("lectura de datos de temperatura");
+    Serial.println("Ambiente = ");
+    Serial.println(temp1);
+    Serial.print("tObjeto = ");
+    Serial.println(temp2);
+    // determina si encuentra una victima viva (diferencia de tempertura)
+    Serial.print("Diferencia ");
+    Serial.println(dif_temp);
+    delay(espera);
+
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+//                                                Procedimeintos de movimientos 
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+//busca el camino
+void busca(){
+  //-----------------------------Movimientos derivados de la lectura de los sensores -----------------------------------------
        //  Si encuentra una victima caliente entrega el kit de salvamento 
        if (dif_temp>10){
           entrega_kit();
@@ -261,74 +349,37 @@ void loop() {
       }
   
       //detecta negro
-      if(v1==1 && v2==1 && v3==1){
-        delay(1000);
+      if(v2==1 && v3==1){
+        delay(500);
         v1=digitalRead(l1);
         v2=digitalRead(l2);
         v3=digitalRead(l3);
-        if(v1==1 && v2==1 && v3==1){
+        if(v2==1 && v3==1){
+             motori_D.setSpeed(ade_ordi);  
+             motori_D.run(BACKWARD);        
+             motord_D.setSpeed(ade_ordd);  
+             motord_D.run(BACKWARD); 
+             delay(ine_ng+1500);
              giro_u();
              //sale del negro
-             motori_D.setSpeed(ade_ordi);  
-             motori_D.run(FORWARD);        
-             motord_D.setSpeed(ade_ordd);  
-             motord_D.run(FORWARD); 
-             delay(ine_ng+1000);
+             //motori_D.setSpeed(ade_ordi);  
+             //motori_D.run(FORWARD);        
+             //motord_D.setSpeed(ade_ordd);  
+             //motord_D.run(FORWARD); 
+             //delay(ine_ng+1000);
         }
       }
-   
-}
-
-//---------------------------------------------------------------------------------------------------------------------------
-//                                     muestra valores de lecturas en sensores
-//---------------------------------------------------------------------------------------------------------------------------
-void muestra(){
-    // ultrasonicos 
-    Serial.print("delantero  ");
-    Serial.println(cm_D);
-    Serial.print("derecho  ");
-    Serial.println(cm_R);
-    Serial.print("Izquierdo ");
-    Serial.println(cm_L);
-    Serial.print("Pared delantera  ");
-    Serial.println(adelante);
-    Serial.print("Pared derecha  ");
-    Serial.println(derecha);
-    Serial.print("Pared Izquierda ");
-    Serial.println(izquierda);
-    delay(espera);
-   
-    //-Lectura de infrarojos (piso negro)
-    Serial.println("Infra rojos");
-    Serial.print("l1: ");
-    Serial.println(v1);
-    Serial.print("l2: ");
-    Serial.println(v2);
-    Serial.print("l3: ");
-    Serial.println(v3);
-    delay(espera);
-    // Inclinacion
-    Serial.println("Inclinacion");
-    Serial.println(inclina);
-    delay(espera);
-    // lectura de temperatura 
-    Serial.println("lectura de datos de temperatura");
-    Serial.println("Ambiente = ");
-    Serial.println(temp1);
-    Serial.print("tObjeto = ");
-    Serial.println(temp2);
-    // determina si encuentra una victima viva (diferencia de tempertura)
-    Serial.print("Diferencia ");
-    Serial.println(dif_temp);
-    delay(espera);
-
+  
+ 
 }
 
 
 
-//----------------------------------------------------------------------------------------------------------------------------
-//                                                Procedimeintos de movimientos 
-//----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 // se detiene 
 void alto(){
    motori_D.setSpeed(0);//velocidad de motor izquierdo
@@ -346,6 +397,7 @@ void avanza(){
     motord_D.run(FORWARD);        
     //desvio="C"; 
     //algoritmo para centrar
+    
     if(cm_L<5 || cm_R>=8 && cm_R<d_enc){ 
         // GIRA A LA DERECHA
         motori_D.setSpeed(ade_ordi);
@@ -358,7 +410,8 @@ void avanza(){
         motori_D.run(FORWARD);       
         motord_D.setSpeed(ade_ordd);  
         motord_D.run(FORWARD);                
-        delay(700);
+        //----------- delay(700);
+        delay(400);
         //desvio="D";
         //izquierda
         motori_D.setSpeed(ade_ordi);
@@ -385,7 +438,8 @@ void avanza(){
         motori_D.run(FORWARD);       
         motord_D.setSpeed(ade_ordd);  
         motord_D.run(FORWARD);                
-        delay(750);
+        //---------delay(750);
+        delay(350);
         // GIRA A LA DERECHA
         motori_D.setSpeed(ade_ordi);
         motori_D.run(FORWARD); 
@@ -404,10 +458,20 @@ void avanza(){
 
 // avanza por la rampa a maxima potencia 
 void rampa(){
-    motori_D.setSpeed(255);  
-    motori_D.run(FORWARD);        
-    motord_D.setSpeed(255);  
-    motord_D.run(FORWARD);         
+   
+    while (inclina==0){
+        motori_D.setSpeed(255);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(255);  
+        motord_D.run(FORWARD);         
+        // Inclinacion
+        inclina=digitalRead(SI);  
+        if (inclina==1){
+            delay(300);
+            inclina=digitalRead(SI);  
+        }
+    }
+     
 }
 
 
@@ -472,14 +536,27 @@ void giro_izquierda(){
 }
 
 
+          
 // Gira a la derecha 180° giro en U
 void giro_u(){
-    //gira
-    motori_D.setSpeed(ade_ordi);
-    motori_D.run(FORWARD); 
-    motord_D.setSpeed(ade_ordi);
-    motord_D.run(BACKWARD);
-    delay(t_u);
+     ultra_R();
+     ultra_L();
+     //Detremina a donde girar (derecha o izquierda)
+       if (cm_R>cm_L) {
+          // pegado a la izquierda debe girar a la derecha
+          motori_D.setSpeed(ade_ordi);
+          motori_D.run(FORWARD); 
+          motord_D.setSpeed(ade_ordi);
+          motord_D.run(BACKWARD);
+          delay(t_ud);
+       }else {
+           // pegado a la derecha debe girar a la izquierda
+          motori_D.setSpeed(ade_ordi);
+          motori_D.run(BACKWARD); 
+          motord_D.setSpeed(ade_ordi);
+          motord_D.run(FORWARD);
+          delay(t_ui);
+       }
     alto();
     ul_giro="U";
     // avanza para para la iniercia
@@ -487,9 +564,8 @@ void giro_u(){
     motori_D.run(FORWARD);        
     motord_D.setSpeed(ade_ordd);  
     motord_D.run(FORWARD);        
-    delay(esp_giro);
+    delay(espera_u);
 }
-          
 
 
 
