@@ -71,7 +71,7 @@ AF_DCMotor motord_D(2); //motor derecho
     int espera=3000;
     // distancia para encontrar las paredes (centimetros)
        int d_enc=30; 
-       int d_fte=15;
+       int d_fte=5;
     //encuentro con las paredes del laberinto (0) libre, (1) encuentra la pared 
        int adelante=0;
        int derecha=0;
@@ -89,13 +89,15 @@ AF_DCMotor motord_D(2); //motor derecho
     //----------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------
        //tiempo para los giros de 90° Izquierda, Derecha y giro en U
-            int t_giroi=3450;      
-            int t_girod=3800;    
+            int t_giroi=2000; //3450;      
+            int t_giroi_flaso=3000;
+            int t_girod=2000; //3800;    
             int t_ui=9000;
             int t_ud=10500;
         // Tiempo de inercia (espera para comenzar el giro al detectar la falta de pared) Izquierda, Derecha y Zona Negra
-            int ineI=1100;        
-            int ineD=1200;
+            int ineI=0;        
+            int ineI_falso=0;        
+            int ineD=0;
             int ine_ng=1500; 
        //  Tiempo para avanzar al frente sin buscar paredes luego de efectuar un giro 
             int esp_giro=3000;    //avanza despues de girar 180°
@@ -298,6 +300,7 @@ void busca(){
        //          |0       1
        //          |          |
        if (((adelante==0)   && (izquierda==0) && (derecha==1))){
+          ineD=0;
           giro_derecha();
        }
     
@@ -325,7 +328,14 @@ void busca(){
      //             1       0 |
      //          |            |
      if ((adelante==1) && (izquierda==1) && (derecha==0)){
-           giro_izquierda();
+           ultra_D();
+           if (cm_D<30){
+               ineI=1500;
+               giro_izquierda();
+           }else {
+               ineI_falso=0;
+               giro_izquierda_falso();
+           }
      }
   
      //Sin Pared al frente Sin pared a la derecha y Sin pared a la izquierda gira a la izquierda
@@ -334,7 +344,10 @@ void busca(){
       //             1       1
       //          |             |
       if ((adelante==1) && (izquierda==1) && (derecha==1)){
-           giro_izquierda();
+           alto();
+           delay(5000);
+           ineI_falso=1800;
+           giro_izquierda_falso();
       }
   
      
@@ -349,6 +362,7 @@ void busca(){
       }
   
       //detecta negro
+      /*
       if(v2==1 && v3==1){
         delay(500);
         v1=digitalRead(l1);
@@ -368,7 +382,7 @@ void busca(){
              //motord_D.run(FORWARD); 
              //delay(ine_ng+1000);
         }
-      }
+      }*/
   
  
 }
@@ -391,6 +405,7 @@ void alto(){
 
 // avanza y centra si se desvia a derecha o izquierda
 void avanza(){
+    ineI_falso=1800;
     motori_D.setSpeed(ade_ordi); 
     motori_D.run(FORWARD);       
     motord_D.setSpeed(ade_ordd);  
@@ -398,7 +413,8 @@ void avanza(){
     //desvio="C"; 
     //algoritmo para centrar
     
-    if(cm_L<5 || cm_R>=8 && cm_R<d_enc){ 
+    //if(cm_L<5 || cm_R>=8 && cm_R<d_enc){ 
+    if(cm_L<2){
         // GIRA A LA DERECHA
         motori_D.setSpeed(ade_ordi);
         motori_D.run(FORWARD); 
@@ -426,7 +442,8 @@ void avanza(){
         motord_D.run(FORWARD);        
         delay(500);
     }
-    if(cm_R<5 || cm_L>=8 && cm_L<d_enc){
+    //if(cm_R<5 || cm_L>=8 && cm_L<d_enc){
+    if(cm_L>4){
         //GIRA IZQUIERDA
         motori_D.setSpeed(ade_ordi);
         motori_D.run(BACKWARD); 
@@ -463,7 +480,8 @@ void rampa(){
         motori_D.setSpeed(255);  
         motori_D.run(FORWARD);        
         motord_D.setSpeed(255);  
-        motord_D.run(FORWARD);         
+        motord_D.run(FORWARD); 
+        delay(500);   
         // Inclinacion
         inclina=digitalRead(SI);  
         if (inclina==1){
@@ -477,6 +495,7 @@ void rampa(){
 
 // Gira a la derecha 90°
 void giro_derecha(){
+    ineI_falso=0;
     // avanza un tiempo para centrar la vuelta
     motori_D.setSpeed(ade_ordi);  
     motori_D.run(FORWARD);        
@@ -498,6 +517,14 @@ void giro_derecha(){
         motord_D.run(BACKWARD);
         ultra_L();
     }
+    alto();
+    delay(1000);
+     // termina el giro a la derecha para separar el sensor izquierdo
+    motori_D.setSpeed(ade_ordi);
+    motori_D.run(FORWARD); 
+    motord_D.setSpeed(ade_ordd);
+    motord_D.run(BACKWARD);
+    delay(1000);
     // avanza para centrarse
     motori_D.setSpeed(ade_ordi);  
     motori_D.run(FORWARD);        
@@ -505,6 +532,7 @@ void giro_derecha(){
     motord_D.run(FORWARD);        
     delay(esp_giro);
     alto();
+    //delay(1000);
     // arranca de nuevo
     motori_D.setSpeed(ade_ordi);  
     motori_D.run(FORWARD);        
@@ -516,6 +544,7 @@ void giro_derecha(){
 
 // Gira a la derecha 90°
 void giro_izquierda(){
+    ineI_falso=0;
     // avanza un tiempo para centrar la vuelta
     motori_D.setSpeed(ade_ordi);  
     motori_D.run(FORWARD);        
@@ -537,7 +566,46 @@ void giro_izquierda(){
         motord_D.run(FORWARD);
         ultra_R();
     }
+    alto();
+    delay(1000);
+    // termina el giro a la izquierda para separar el sensor derecho
+    motori_D.setSpeed(ade_ordi);
+    motori_D.run(BACKWARD); 
+    motord_D.setSpeed(ade_ordd);
+    motord_D.run(FORWARD);
+    delay(900);
+    // se centra
+    motori_D.setSpeed(ade_ordi);  
+    motori_D.run(FORWARD);        
+    motord_D.setSpeed(ade_ordd);  
+    motord_D.run(FORWARD);        
+    delay(esp_giro);
+    alto();
+    //delay(1000);
+    // arranca
+    motori_D.setSpeed(ade_ordi);  
+    motori_D.run(FORWARD);        
+    motord_D.setSpeed(ade_ordd);  
+    motord_D.run(FORWARD);        
+    ul_giro="IZ";
+ 
+}
+
+// Gira a la derecha 90°
+void giro_izquierda_falso(){
+    // avanza un tiempo para centrar la vuelta
     
+    motori_D.setSpeed(ade_ordi);  
+    motori_D.run(FORWARD);        
+    motord_D.setSpeed(ade_ordd);  
+    motord_D.run(FORWARD);        
+    delay(ineI_falso); //avanza para centrar el giro
+    // inicia el giro a la izquierda para separar el sensor derecho
+    motori_D.setSpeed(ade_ordi);
+    motori_D.run(BACKWARD); 
+    motord_D.setSpeed(ade_ordd);
+    motord_D.run(FORWARD);
+    delay(t_giroi_flaso);
     // se centra
     motori_D.setSpeed(ade_ordi);  
     motori_D.run(FORWARD);        
@@ -551,9 +619,8 @@ void giro_izquierda(){
     motord_D.setSpeed(ade_ordd);  
     motord_D.run(FORWARD);        
     ul_giro="IZ";
- 
+    ineI_falso=0;
 }
-
 
           
 // Gira a la derecha 180° giro en U
@@ -570,7 +637,7 @@ void giro_u(){
             motord_D.run(BACKWARD);
             delay(t_girod);
             //gira a la derecha hasta encontrar la pared izquierda
-            ultra_R()
+            ultra_R();
             ultra_L();
             while (cm_L>5 || cm_R >5 ) {
                 motori_D.setSpeed(ade_ordi);
@@ -580,6 +647,11 @@ void giro_u(){
                 ultra_R();
                 ultra_L();
             }
+             motori_D.setSpeed(ade_ordi);
+             motori_D.run(FORWARD); 
+             motord_D.setSpeed(ade_ordd);
+             motord_D.run(BACKWARD);
+             delay(700);
        }else {
             // pegado a la derecha debe girar a la izquierda
             // inicia el giro a la izquierda para separar el sensor derecho
@@ -589,7 +661,7 @@ void giro_u(){
             motord_D.run(FORWARD);
             delay(t_giroi);
             //Gira Izquierda hasta encontrar pared derecha
-            ultra_R()
+            ultra_R();
             ultra_L();
             while (cm_L>5 || cm_R >5 ) {
                 motori_D.setSpeed(ade_ordi);
@@ -599,6 +671,11 @@ void giro_u(){
                 ultra_R();
                 ultra_L();
             }
+            motori_D.setSpeed(ade_ordi);
+            motori_D.run(BACKWARD); 
+            motord_D.setSpeed(ade_ordd);
+            motord_D.run(FORWARD);
+            delay(700);
        }
       alto();
       ul_giro="U";
@@ -608,6 +685,7 @@ void giro_u(){
       motord_D.setSpeed(ade_ordd);  
       motord_D.run(FORWARD);        
       delay(espera_u);
+      
 }
 
 
