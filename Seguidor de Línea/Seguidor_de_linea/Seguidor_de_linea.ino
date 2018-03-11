@@ -29,8 +29,8 @@ SoftwareWire myWire( 4, 5);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Puede 
 #define blanco 1
 #define negro 0
 //Velocidades de los motores
-int velI=140;    //160
-int velD=140;    //163
+#define velI 150    //160
+#define velD 153    //163
 
 //Variables de ambos sensores RGB
 //1° sensor RGB
@@ -77,14 +77,6 @@ int dl8=0;
 int bco=620;  //620
 int neg=720;  //720
 
-//Sensor ultrasónico
-const int EchoPin = 53;
-const int TriggerPin = 52;
-
-//Sensor de inclinación
-int s_inc=50;
-int inc=0;
-
 void setup(){
   //Se inicia la comunicación Serial
   Serial.begin(9600);
@@ -111,20 +103,9 @@ void setup(){
   pinMode(der_6,INPUT);
   pinMode(der_7,INPUT);
   pinMode(der_8,INPUT);
-
-  //Inclinación
-  pinMode(s_inc,INPUT);
-
-  //Ultrasónico
-  pinMode(TriggerPin, OUTPUT);
-  pinMode(EchoPin, INPUT);
 }
 
 void loop() {
-  //Inclinación
-  inc=digitalRead(s_inc);
-  //Ultrasónico
-  int cm = ping(TriggerPin, EchoPin);
   //Se guardan datos del sensor infrarrojo
   l1=analogRead(izq_1);
   l2=analogRead(izq_2);
@@ -143,62 +124,9 @@ void loop() {
   if (l6<=bco){dl6=1;} else {dl6=0;}
   if (l7<=bco){dl7=1;} else {dl7=0;}
   if (l8<=bco){dl8=1;} else {dl8=0;}
-
-  if (cm<10);{
-    ///RETROCEDER
-    motores.setM1Speed (-90);
-    motores. setM2Speed (-90);
-    delay (1000);
-    //Quieto
-    motores.setM1Speed (0);
-    motores.setM2Speed (0);
-    delay (500);
-    //GIRAR A LA DERECHA
-    motores.setM1Speed (-150);
-    motores.setM2Speed (190);
-    delay (500);
-     //AVANZAR
-    motores.setM1Speed (100);
-    motores.setM2Speed (100);
-    delay (2500);
-    //GIRAR A LA IZQUIERDA
-    motores.setM1Speed (180);
-    motores.setM2Speed (-160);
-    delay (500);
-    //AVANZAR
-    motores.setM1Speed (100);
-    motores.setM2Speed (100);
-    delay (3100);
-    //GIRAR A LA IZQUIERDA
-    motores.setM1Speed (150);
-    motores.setM2Speed (-190);
-    delay (500);
-    //AVANZAR
-    motores.setM1Speed (100);
-    motores.setM2Speed (100);
-    delay (1000);
-   //SE INCORPORA A LA LINEA
-    motores.setM2Speed (100);
-    motores.setM2Speed (100);
-    delay (500);
-    //Quieto
-    motores.setM1Speed (0);
-    motores.setM2Speed (0);
-    delay (500);
-    }
   
   //Moverse en linea recta
   Moverse(velD,velI);
-
-  //Inclinación
-  if(inc==0){
-    velD=350;
-    velI=350; 
-  }
-  if(inc==1){
-    velD=140;
-    velI=140;
-  }
 
   if(dl3==negro && dl6==negro){
     Moverse(velD,velI);
@@ -206,12 +134,12 @@ void loop() {
 
   //Muy desviado a la izquierda
   if(dl8==negro && dl7==negro && dl3==negro){
-    Moverse(-400,350);//-250,200
+    Moverse(-250,200);
   }
 
   //Muy desviado a la derecha
   if(dl1==negro && dl2==negro && dl6==negro){
-    Moverse(350,-400);//200,-250
+    Moverse(200,-250);
   }
 
   //Centrado
@@ -221,12 +149,12 @@ void loop() {
 
   //Ligeramente desviado a la izquierda
   if(dl2==negro && dl8==blanco && dl1==blanco){
-    Moverse(280,-200);//220,-140
+    Moverse(200,-120);
   }
 
   //Ligeramente desviado a la derecha
   if(dl7==negro && dl1==blanco && dl5==blanco){
-    Moverse(-200,280);//-120,200
+    Moverse(-120,200);
   }
 
   //Curvas de 90°
@@ -238,18 +166,11 @@ void loop() {
     Moverse(200,-130);
   }
 
-  if(dl2==negro || dl2==negro && dl1==negro){
-    Moverse(200,-250);
-  }
-  if(dl7==negro || dl7==negro && dl8==negro){
-    Moverse(-250,200);  
-  }
-
-  /*//Intersección
+  //Intersección
   if(dl1==negro && dl8==negro){
-    Moverse(0,0);
-    delay(1000);
-  }*/
+    //Moverse(0,0);
+    //delay(1000);
+  }
 
   //imprimirDatosInf();
   //delay(800);
@@ -260,22 +181,6 @@ void loop() {
 int Moverse(int velD_, int velI_){
   motores.setM1Speed(velD_);
   motores.setM2Speed(velI_);
-}
-
-//Calcular distancia del ultrasónico
-int ping(int TriggerPin, int EchoPin) {
-   long duration, distanceCm;
-   
-   digitalWrite(TriggerPin, LOW);  //para generar un pulso limpio ponemos a LOW 4us
-   delayMicroseconds(4);
-   digitalWrite(TriggerPin, HIGH);  //generamos Trigger (disparo) de 10us
-   delayMicroseconds(10);
-   digitalWrite(TriggerPin, LOW);
-   
-   duration = pulseIn(EchoPin, HIGH);  //medimos el tiempo entre pulsos, en microsegundos
-   
-   distanceCm = duration * 10 / 292/ 2;   //convertimos a distancia, en cm
-   return distanceCm;
 }
 
 //Función para imprimir valores del sensor
