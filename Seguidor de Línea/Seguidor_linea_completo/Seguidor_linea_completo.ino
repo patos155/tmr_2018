@@ -214,7 +214,7 @@ void loop() {
   if(dl7==negro || dl7==negro && dl8==negro){
     Moverse(-250,200);  
   }
-
+/*
 
   //Intersección
   if(dl1==negro && dl8==negro && dl4==negro && dl5==negro){
@@ -253,7 +253,7 @@ void loop() {
 
     if(der==false && izq==false){   //Si no hay ningun verde
       Moverse(100,100);
-      delay(300);
+      delay(200);
       //Leemos la linea nuevamente
       l1=analogRead(izq_1);
       l2=analogRead(izq_2);
@@ -292,7 +292,7 @@ void loop() {
       }
       
     }
-  }
+  }*/
 
   
   //leerRGB();
