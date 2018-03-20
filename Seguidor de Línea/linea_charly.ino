@@ -1,11 +1,11 @@
 #include <ArduinoMotorShieldR3.h>   //Libreria para usar el motor shield de arduino
 #include <Wire.h>           //Libreria para usar la comuniación I2C
-#include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
-#include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
+//#include <SFE_ISL29125.h>   //Libreria para usar el sensor RGB
+//#include <SoftwareWire.h>   //Libreria para usar I2C en otros pines digitales
 
 ArduinoMotorShieldR3 motores;   //Declaración de los motores
 
-SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
+/*SFE_ISL29125 RGB_sensor;    //Creación del 1° Sensor RGB
 SoftwareWire myWire( 50, 51);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Puede ser cualquier pin digital)
 
 //Direcciones del 2° sensor
@@ -22,17 +22,20 @@ SoftwareWire myWire( 50, 51);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Pued
 #define CONFIG_3 0x03               //En él se guardan el tercer parámetro de configuración
 
 #define STATUS 0x08                 //En él guarda el estado del sensor
-
+*/
 //Variables de la pista
 #define blanco 1
 #define negro 0
 //Velocidades de los motores
 int velI=200;    //160
 int velD=200;   //163
+//recuerda ultimo movimiento
+  int ulmov_I=velI;
+  int ulmov_D=velD;
 
 //Variables de ambos sensores RGB
 //1° sensor RGB
-uint16_t r1=0;
+/*uint16_t r1=0;
 uint16_t v1=0;
 uint16_t a1=0;
 
@@ -40,7 +43,7 @@ uint16_t a1=0;
 uint16_t r2=0;
 uint16_t v2=0;
 uint16_t a2=0;
-
+*/
 //SENSOR INFRARROJO
 //Pines del sensor infrarrojo
   int izq_1=A8;
@@ -88,8 +91,10 @@ uint16_t a2=0;
 
 //Contadores
   int cont=0;
+  int op_inter=10;
   int cont2=0;
   int inicio=0;
+
 
 void setup(){
     //Se inicia la comunicación Serial
@@ -97,7 +102,7 @@ void setup(){
   
     //Iniciar motores
     motores.init();
-  
+ /* 
     //Iniciar sensores RGB
     if (RGB_sensor.init())    //Iniciar 1° sensor RGB
     {
@@ -107,7 +112,7 @@ void setup(){
     if(init2()){              //Iniciar 2° sensor RGB
       Serial.println("Sensor 2 iniciado");
     }
-  
+  */
     //Configurando pines del sensor infrarrojo como entradas
     pinMode(izq_1,INPUT);
     pinMode(izq_2,INPUT);
@@ -134,106 +139,133 @@ void loop() {
   
     //0??????0 
     //intersección
-    if((dl1==negro || dl2==negro) && (dl7==negro || dl8==negro){
-      Moverse(0,0);
-      delay(1000);
-    }
- 
-  
-    //11100111
-    //Centrado
-    if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==negro && dl5==negro && dl6==blanco && dl7==blanco && dl8==blanco){
-        Moverse(velD,velI);
-        ultra();
-        if(cm>1 && cm<3){
-          obstaculo();
-        }
-        digitalWrite(led,HIGH);
+    if((dl1==negro) && (dl5==negro) && (dl8==negro)){
+        digitalWrite(led,HIGH);  
         cont++;
-    }
-    
-    //11001111
-    //Centrado un poco a la izquierda
-    if(dl1==blanco && dl2==blanco && dl3==negro && dl4==negro && dl5==blanco && dl6==blanco && dl7==blanco && dl8==blanco){
-        Moverse(velD,velI);
-        ultra();
-        if(cm>1 && cm<3){
-          obstaculo();
+        Moverse(-150,-150);
+        delay(100);
+        Moverse(0,0);
+        delay(500);
+        leerInfra();
+        if (cont>op_inter){
+            cont=0;
+            Moverse(100,100);
+            delay(500);
+            while ((dl1==negro) && (dl5==negro) && (dl8==negro)){
+              Moverse(100,100);
+              leerInfra();
+            }
+          
         }
-        digitalWrite(led,HIGH);
-        cont++;
-    }
-    
-    //11110011
-    //Centrado un poco a la derecha
-    if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==blanco && dl5==negro && dl6==negro && dl7==blanco && dl8==blanco){
-        Moverse(velD,velI);
-        ultra();
-        if(cm>1 && cm<3){
-          obstaculo();
+        
+    }else{
+        //11100111
+        //Centrado
+        if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==negro && dl5==negro && dl6==blanco && dl7==blanco && dl8==blanco){
+            Moverse(velD,velI);
+            ultra();
+            if(cm>1 && cm<3){
+              obstaculo();
+            }
+            digitalWrite(led,LOW);  
+            ulmov_D=velD;
+            ulmov_I=velI;
+
+        }else{
+            //11111111
+            //En linea pausada
+            if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==blanco && dl5==blanco && dl6==blanco && dl7==blanco && dl8==blanco){
+                Moverse(velD,velI);
+                ultra();
+                if(cm>1 && cm<3){
+                  obstaculo();
+                }
+                digitalWrite(led,LOW);  
+                ulmov_D=velD;
+                ulmov_I=velI;
+            }else{
+                //??0??0?? 
+                //Linea chida
+                if(dl3==negro && dl6==blanco){
+                    Moverse(180,-120);
+                    digitalWrite(led,LOW);
+                    ulmov_D=180;
+                    ulmov_I=-120;
+                }else{
+                    //??1??0??
+                    if(dl3==blanco && dl6==negro){
+                        Moverse(-120,180);
+                        digitalWrite(led,LOW);
+                        ulmov_D=-120;
+                        ulmov_I=180;
+                    }else{
+                        //0??????1
+                        if(dl1==negro && dl8==blanco){
+                            Moverse(210,-130);
+                            ulmov_D=210;
+                            ulmov_I=-130;
+                            delay(40);
+                            digitalWrite(led,LOW);
+                        }else{
+                            //1??????0
+                            if(dl1==blanco && dl8==negro){
+                                Moverse(-130,210);
+                                ulmov_D=-130;
+                                ulmov_I=210;
+                                delay(40);
+                                digitalWrite(led,LOW);
+                            }else{
+                                //------QUE???? como se agrupan los AND y los OR ???????????????????????????????????????????????????
+                                //Curvas de 90°
+                                
+                                if((dl6==negro && dl7==negro && dl8==negro) || (dl5==negro && dl6==negro && dl7==negro && dl8==negro)){
+                                    Moverse(-130,210);
+                                    ulmov_D=-130;
+                                    ulmov_I=210;
+                                    delay(40);
+                                }else{
+                                    //------QUE???? como se agrupan los AND y los OR ???????????????????????????????????????????????????
+                                    if((dl1==negro && dl2==negro && dl3==negro) || (dl1==negro && dl2==negro && dl3==negro && dl4==negro)){
+                                        Moverse(210,-130);
+                                        ulmov_D=210;
+                                        ulmov_I=-130;
+                                        delay(40);
+                                    }else{
+                                        //11001111
+                                        if(dl1==blanco && dl2==blanco && dl3==negro && dl4==negro && dl5==blanco && dl6==blanco && dl7==blanco && dl8==blanco){
+                                            Moverse(velD+20,velI-20);
+                                            ulmov_D=velD+20;
+                                            ulmov_I=velI-20;
+                                            ultra();
+                                            if(cm>1 && cm<3){
+                                              obstaculo();
+                                            }
+                                            digitalWrite(led,LOW);  
+                                        }else {
+                                            //11110011
+                                            if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==blanco && dl5==negro && dl6==negro && dl7==blanco && dl8==blanco){
+                                                Moverse(velD-20,velI+20);
+                                                ulmov_D=velD-20;
+                                                ulmov_I=velI+20;
+                                                ultra();
+                                                if(cm>1 && cm<3){
+                                                  obstaculo();
+                                                }
+                                                digitalWrite(led,LOW);  
+                                            }else{
+                                                //Moverse(0,0);
+                                            }
+                                          
+                                          
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        digitalWrite(led,HIGH);
-        cont++;
-    }
-    
-    //11111111
-    //En linea pausada
-    if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==blanco && dl5==blanco && dl6==blanco && dl7==blanco && dl8==blanco){
-        Moverse(velD,velI);
-        ultra();
-        if(cm>1 && cm<3){
-          obstaculo();
-        }
-        digitalWrite(led,HIGH);
-        cont++;
-    }
-
-
-
-    
-    //??0??0?? 
-    //Linea chida
-    if(dl3==negro && dl6==blanco){
-        Moverse(180,-120);
-        digitalWrite(led,LOW);
-        cont=0;
-    }
-
-    //??1??0??
-    if(dl3==blanco && dl6==negro){
-        Moverse(-120,180);
-        digitalWrite(led,LOW);
-        cont=0;
-    }
-
-    //0??????1
-    if(dl1==negro && dl8==blanco){
-      Moverse(210,-130);
-      delay(40);
-      digitalWrite(led,LOW);
-      cont=0;
-    }
-
-
-    //1??????0
-    if(dl1==blanco && dl8==negro){
-      Moverse(-130,210);
-      delay(40);
-      digitalWrite(led,LOW);
-      cont=0;
-    }
-    
-    //------QUE???? como se agrupan los AND y los OR ???????????????????????????????????????????????????
-    //Curvas de 90°
-    if(dl6==negro && dl7==negro && dl8==negro || dl5==negro && dl6==negro && dl7==negro && dl8==negro){
-        Moverse(-130,210);
-        delay(40);
-    }
-
-    //------QUE???? como se agrupan los AND y los OR ???????????????????????????????????????????????????
-    if(dl1==negro && dl2==negro && dl3==negro || dl1==negro && dl2==negro && dl3==negro && dl4==negro){
-      Moverse(210,-130);
-      delay(40);
     }
     
 }
@@ -326,6 +358,7 @@ void ultra(){
     // tenemos en millonesimas de segundo
     cm = float(tiempo * 0.0343);
 }
+/*
 void leerRGB(){
     //Valores del 1° sensor RGB
     r1 = RGB_sensor.readRed();
@@ -464,4 +497,4 @@ void write8(uint8_t reg, uint8_t data)
   
     return;
 }
-
+*/
