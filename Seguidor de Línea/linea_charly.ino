@@ -253,7 +253,8 @@ void loop() {
                                                 }
                                                 digitalWrite(led,LOW);  
                                             }else{
-                                                //Moverse(0,0);
+                                                Moverse(0,0);
+                                                imprimirDatosInf();
                                             }
                                           
                                           
