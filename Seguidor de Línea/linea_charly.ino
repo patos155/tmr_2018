@@ -27,8 +27,8 @@ SoftwareWire myWire( 50, 51);   //Configurar pines 4(SDA) y 5(SCL) con I2C (Pued
 #define blanco 1
 #define negro 0
 //Velocidades de los motores
-int velI=200;    //160
-int velD=200;   //163
+int velI=170;    //160
+int velD=170;   //163
 //recuerda ultimo movimiento
   int ulmov_I=velI;
   int ulmov_D=velD;
@@ -244,7 +244,7 @@ void loop() {
                                         }else {
                                             //11110011
                                             if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==blanco && dl5==negro && dl6==negro && dl7==blanco && dl8==blanco){
-                                                Moverse(velD-20,velI+20);
+                                                Moverse(velD+-0,velI+20);
                                                 ulmov_D=velD-20;
                                                 ulmov_I=velI+20;
                                                 ultra();
@@ -253,10 +253,46 @@ void loop() {
                                                 }
                                                 digitalWrite(led,LOW);  
                                             }else{
-                                                Moverse(0,0);
-                                                imprimirDatosInf();
+                                                //11101111
+                                                if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==negro && dl5==blanco && dl6==blanco && dl7==blanco && dl8==blanco){
+                                                      Moverse(velD+20,velI-20);
+                                                      ulmov_D=velD-20;
+                                                      ulmov_I=velI+20;
+                                                      ultra();
+                                                      if(cm>1 && cm<3){
+                                                        obstaculo();
+                                                      }
+                                                   
+                                                  }else{
+                                                      //11110111
+                                                      if(dl1==blanco && dl2==blanco && dl3==blanco && dl4==blanco && dl5==negro && dl6==blanco && dl7==blanco && dl8==blanco){
+                                                            Moverse(velD-20,velI+20);
+                                                            ulmov_D=velD-20;
+                                                            ulmov_I=velI+20;
+                                                            ultra();
+                                                            if(cm>1 && cm<3){
+                                                              obstaculo();
+                                                            }
+                                                         
+                                                        }else {
+
+                                                            //00111110
+                                                            if(dl1==negro && dl2==negro && dl3==blanco && dl4==blanco && dl5==negro && dl6==blanco && dl7==blanco && dl8==negro){
+                                                                  Moverse(velD-50,velI+50);
+                                                                  ulmov_D=velD-20;
+                                                                  ulmov_I=velI+20;
+                                                                  ultra();
+                                                                  if(cm>1 && cm<3){
+                                                                    obstaculo();
+                                                                  }
+                                                            }else{ 
+                                                                  //digitalWrite(led,LOW);
+                                                                  //Moverse(0,0);
+                                                                  //imprimirDatosInf();
+                                                            }
+                                                        }
+                                                  }
                                             }
-                                          
                                           
                                         }
                                     }
@@ -342,6 +378,7 @@ void imprimirDatosInf(){
     Serial.print("Der 7: ");Serial.print(l7);Serial.print("\t / D Izq 1: ");Serial.println(dl7);
     Serial.print("Der 8: ");Serial.print(l8);Serial.print("\t / D Izq 1: ");Serial.println(dl8);
     Serial.println("-----------------------------------");
+    delay(2000);
 }
 
 void ultra(){
