@@ -79,14 +79,14 @@ AF_DCMotor motord_D(2); //motor derecho
     int ind_vic=36;
     
 //Sensores de contacto
-     //izquierda
+    //izquierda
        int CII = 28;
        int CEI = 26;
        int SII=1;
        int SEI=1;
-      //derecha
-       int CID = 22;
-       int CED = 24;
+    //derecha
+       int CID = 24;
+       int CED = 22;
        int SID=1;
        int SED=1;
     
@@ -94,22 +94,22 @@ AF_DCMotor motord_D(2); //motor derecho
 //                                      Variables con parametros de funcionamiento
 //---------------------------------------------------------------------------------------------------------------------
     // inicia ciclo
-       int inicio=0;
+      int inicio=0;
     // tiempo de espera para pruebas 
-    int espera=3000;
+      int espera=3000;
     // distancia para encontrar las paredes (centimetros)
-       int d_enc=30; 
-       int d_fte=5;
+      int d_enc=30; 
+      int d_fte=5;
     //encuentro con las paredes del laberinto (0) libre, (1) encuentra la pared 
-       int adelante=0;
-       int derecha=0;
-       int izquierda=0;
+      int adelante=0;
+      int derecha=0;
+      int izquierda=0;
        
     //velocidad de oruga
-       int ade_ordi=140;
-       int medioi=115;
-       int ade_ordd=190;
-       int mediod=150;
+      int ade_ordi=140;
+      int medioi=115;
+      int ade_ordd=190;
+      int mediod=150;
        
     //----------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------
@@ -136,6 +136,7 @@ AF_DCMotor motord_D(2); //motor derecho
 
        //corrige desviacion 
            int dif_sf=0;
+       int cont_ciclo=0;
     
 
        String ul_giro;
@@ -211,10 +212,10 @@ void setup() {
         pinMode(SI,INPUT);
         pinMode(ind_vic,OUTPUT); 
   //Sensores de Contacto
-      pinMode(CEI, INPUT); 
-      pinMode(CII, INPUT); 
-      pinMode(CED, INPUT); 
-      pinMode(CID, INPUT); 
+        pinMode(CEI, INPUT); 
+        pinMode(CII, INPUT); 
+        pinMode(CED, INPUT); 
+        pinMode(CID, INPUT); 
  
   // Servo para dispensador de kits de salvamento 
         kits.attach(10);
@@ -227,12 +228,11 @@ void setup() {
 
 void loop() {
    //inicia posicion del servo del dispensador de kits
-   //kits.write(90);
-   //Serial.println("hola");
+   kits.write(90);
    // --------------------------------------Lectura de sensores y calculos respectivos -------------------------------------------------------
    // inicia los senores  
    if (inicio==0){
-      for (int i=0;i<=100;i++){
+      for (int i=0;i<=50;i++){
          lee();
       }
       inicio=1;
@@ -240,11 +240,10 @@ void loop() {
         
    lee();
    //muestra datos de sensores en el monitor serial
-   //Serial.println("muestra");
    //muestra();
 
    // busca el camino 
-   busca();
+    busca();
 
    //ajuste para giros
    //giro_izquierda();
@@ -261,13 +260,8 @@ void loop() {
 
 
 void lee(){
-    //Serial.println("entre a leer");
     // lee sensores y determina distancia a las paredes
-   
     ultra_D();
-    //ultra_DL();
-    //ultra_DR();
-    //cm_DR=30;
     ultra_R();
     ultra_L();
     //Detremina si encontro la pared Delantera
@@ -334,7 +328,15 @@ void muestra(){
     Serial.println(derecha);
     Serial.print("Pared Izquierda ");
     Serial.println(izquierda);
-    delay(espera);
+    //Lectura de sensores de contacto
+    Serial.print("\nContacto Externo Izquierdo: ");
+    Serial.println(SEI);
+    Serial.print("Contacto Interno Izquierdo: ");
+    Serial.println(SII);
+    Serial.print("Contacto Interno Derecho: ");
+    Serial.println(SID);
+    Serial.print("Contacto Externo Derecho: ");
+    Serial.println(SED);
    
     //-Lectura de infrarojos (piso negro)
     Serial.println("Infra rojos");
@@ -344,11 +346,9 @@ void muestra(){
     Serial.println(v2);
     Serial.print("l3: ");
     Serial.println(v3);
-    //delay(espera);
     // Inclinacion
     Serial.println("Inclinacion");
     Serial.println(inclina);
-    //delay(espera);
     // lectura de temperatura izquierda
     Serial.println("lectura de datos de temperatura 1");
     Serial.println("Ambiente = ");
@@ -368,19 +368,7 @@ void muestra(){
     // determina si encuentra una victima viva (diferencia de tempertura)
     Serial.print("Diferencia ");
     Serial.println(dif_temp2);
-   
-
-    //Lectura de sensores de contacto
-    Serial.print("\nContacto Externo Izquierdo: ");
-    Serial.println(SEI);
-    Serial.print("Contacto Interno Izquierdo: ");
-    Serial.println(SII);
-    Serial.print("Contacto Interno Derecho: ");
-    Serial.println(SID);
-    Serial.print("Contacto Externo Derecho: ");
-    Serial.println(SED);
-
-     delay(espera);
+    delay(espera);
 }
 
 
@@ -455,7 +443,7 @@ void busca(){
                  giro_izquierda();
              }else {
               
-                 ineI_falso=1800;
+                 ineI_falso=1400;
                  giro_izquierda_falso();
              }
              ul_giro="I";
@@ -467,22 +455,25 @@ void busca(){
         //             1       1
         //          |             |
         if ((adelante==1) && (izquierda==1) && (derecha==1)){
-             alto();
-             ultra_D();
-             if (cm_D<30){
-                 motori_D.setSpeed(ade_ordi); 
-                 motori_D.run(FORWARD);       
-                 motord_D.setSpeed(ade_ordd);  
-                 motord_D.run(FORWARD);
-                 delay(2500);
-                 alto();
-                 ineI_falso=0;
-             }
-             else{
-               ineI_falso=1500;
-             }
-             giro_izquierda_falso();
-             ul_giro="I";
+            ver_delante();
+            alto();
+            ultra_D();
+            if (cm_D<30){
+               // motori_D.setSpeed(ade_ordi); 
+               // motori_D.run(FORWARD);       
+               // motord_D.setSpeed(ade_ordd);  
+               // motord_D.run(FORWARD);
+               // delay(2500);
+                //alto();
+                ineI_falso=0;
+                giro_izquierda();
+            }
+            else{
+              ineI_falso=1500;
+              giro_izquierda_falso();
+            }
+            //giro_izquierda_falso();
+            ul_giro="I";
         }
     
        
@@ -496,113 +487,7 @@ void busca(){
             giro_u();
             ul_giro="U";
         }
-/*
-        //los sensores al frente se encuentran en 1-0-1 con obstaculo al frente (no pared)
-        if (adelante == 2){
-           if (izquierda==0 && derecha==1){
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-           }
-           if (izquierda==1 && derecha==0){
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-           }
-        }
-        //los sensores al frente se encuentran en 0-1-1 con obstaculo al frente (no pared)
-        if (adelante == 3){
-           // Obstaculo a la izquierda sin pared a la derecha
-           if (izquierda==0 && derecha==1){
-               giro_derecha_falso();
-               avanza_falso();
-               delay(1000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(1000);
-               giro_derecha_falso();
-           }
-           // Obstaculo a la izquierda sin pared a la izquierda
-           if (izquierda==1 && derecha==0){
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-           }
-           //Choco contra la pared a la izquierda?
-           if (izquierda==1 && derecha==1 && ul_giro=="I"){
-               giro_derecha_falso();
-               avanza_falso();
-               delay(1000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               
-           }
-        }
-        //los sensores al frente se encuentran en 1-1-0 con obstaculo al frente (no pared)
-        if (adelante == 4){
-           // Obstaculo a la derecha sin pared a la derecha
-           if (izquierda==0 && derecha==1){
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-           }
-           // Obstaculo a la derecha sin pared a la izquierda
-           if (izquierda==1 && derecha==0){
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(1000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(1000);
-               giro_izquierda_falso();
-           }
-           //Choco contra la pared a la derecha?
-           if (izquierda==1 && derecha==1 && ul_giro=="D"){
-               giro_izquierda_falso();
-               avanza_falso();
-               delay(1000);
-               giro_derecha_falso();
-               avanza_falso();
-               delay(2000);
-               
-           }
-        }
-*/
+
       //detecta negro
       
       if(v2==1 && v3==1){
@@ -630,8 +515,39 @@ void busca(){
 }
 
 
-
-
+void ver_delante(){
+  //SEI,SII,SED,SID
+            if (SEI==0){
+                alto();
+                delay(1000);
+                atras();
+                delay(1000);
+                aladerecha();
+            }
+            if (SII==0){
+                alto();
+                delay(1000);
+                atras();
+                delay(1000);
+                aladerecha();
+                aladerecha();
+            }
+            if (SID==0){
+                alto();
+                delay(1000);
+                atras();
+                delay(1000);
+                alaizquierda();
+            }
+            if (SED==0){
+                alto();
+                delay(1000);
+                atras();
+                delay(1000);
+                alaizquierda();
+                alaizquierda();
+            }
+}
 
 
 
@@ -645,10 +561,77 @@ void alto(){
    delay(300);
 }
 
+//Atras
+void atras(){
+    motori_D.setSpeed(ade_ordi);  
+    motori_D.run(BACKWARD);        
+    motord_D.setSpeed(ade_ordd);  
+    motord_D.run(BACKWARD); 
+}
+
+void aladerecha(){
+        // GIRA A LA DERECHA
+        motori_D.setSpeed(ade_ordi);
+        motori_D.run(FORWARD); 
+        motord_D.setSpeed(ade_ordd);
+        motord_D.run(BACKWARD);
+        delay(550);
+        //avanza
+        motori_D.setSpeed(ade_ordi); 
+        motori_D.run(FORWARD);       
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);                
+        //----------- delay(700);
+        delay(400);
+        //desvio="D";
+        //izquierda
+        motori_D.setSpeed(ade_ordi);
+        motori_D.run(BACKWARD); 
+        motord_D.setSpeed(ade_ordd);
+        motord_D.run(FORWARD);
+        delay(400);
+        //avanza
+        motori_D.setSpeed(ade_ordi); 
+        motori_D.run(FORWARD);       
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);        
+        delay(500);
+}
+
+void alaizquierda(){
+        //GIRA IZQUIERDA
+        motori_D.setSpeed(ade_ordi);
+        motori_D.run(BACKWARD); 
+        motord_D.setSpeed(ade_ordd);
+        motord_D.run(FORWARD);
+        delay(450);
+        //avanza
+        motori_D.setSpeed(ade_ordi); 
+        motori_D.run(FORWARD);       
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);                
+        //---------delay(750);
+        delay(350);
+        // GIRA A LA DERECHA
+        motori_D.setSpeed(ade_ordi);
+        motori_D.run(FORWARD); 
+        motord_D.setSpeed(ade_ordd);
+        motord_D.run(BACKWARD);
+        delay(450);
+        //avanza
+        motori_D.setSpeed(ade_ordi); 
+        motori_D.run(FORWARD);       
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);               
+        delay(500);
+    //desvio="I";
+}
+
+
+
 // avanza y centra si se desvia a derecha o izquierda
 void avanza(){
     //??????????????????????????????????????????????????????????????negro();
-   
     ineI_falso=1800;
     dif_sf=cm_DL-cm_DR;
     // DESVIADO A LA IZQUIERDA
@@ -677,61 +660,11 @@ void avanza(){
     
     //if(cm_L<5 || cm_R>=8 && cm_R<d_enc){ 
     if(cm_L<2){
-        // GIRA A LA DERECHA
-        motori_D.setSpeed(ade_ordi);
-        motori_D.run(FORWARD); 
-        motord_D.setSpeed(ade_ordd);
-        motord_D.run(BACKWARD);
-        delay(550);
-        //avanza
-        motori_D.setSpeed(ade_ordi); 
-        motori_D.run(FORWARD);       
-        motord_D.setSpeed(ade_ordd);  
-        motord_D.run(FORWARD);                
-        //----------- delay(700);
-        delay(400);
-        //desvio="D";
-        //izquierda
-        motori_D.setSpeed(ade_ordi);
-        motori_D.run(BACKWARD); 
-        motord_D.setSpeed(ade_ordd);
-        motord_D.run(FORWARD);
-        delay(400);
-        //avanza
-        motori_D.setSpeed(ade_ordi); 
-        motori_D.run(FORWARD);       
-        motord_D.setSpeed(ade_ordd);  
-        motord_D.run(FORWARD);        
-        delay(500);
+        aladerecha();
     }
     //if(cm_R<5 || cm_L>=8 && cm_L<d_enc){
     if(cm_L>4){
-        //GIRA IZQUIERDA
-        motori_D.setSpeed(ade_ordi);
-        motori_D.run(BACKWARD); 
-        motord_D.setSpeed(ade_ordd);
-        motord_D.run(FORWARD);
-        delay(450);
-        //avanza
-        motori_D.setSpeed(ade_ordi); 
-        motori_D.run(FORWARD);       
-        motord_D.setSpeed(ade_ordd);  
-        motord_D.run(FORWARD);                
-        //---------delay(750);
-        delay(350);
-        // GIRA A LA DERECHA
-        motori_D.setSpeed(ade_ordi);
-        motori_D.run(FORWARD); 
-        motord_D.setSpeed(ade_ordd);
-        motord_D.run(BACKWARD);
-        delay(450);
-        //avanza
-        motori_D.setSpeed(ade_ordi); 
-        motori_D.run(FORWARD);       
-        motord_D.setSpeed(ade_ordd);  
-        motord_D.run(FORWARD);               
-        delay(500);
-        //desvio="I";
+        alaizquierda();
     }
 }
 
@@ -744,11 +677,8 @@ void avanza_falso(){
 }
 
 
-
-
 // avanza por la rampa a maxima potencia 
 void rampa(){
-   
     while (inclina==0){
         motori_D.setSpeed(255);  
         motori_D.run(FORWARD);        
@@ -766,12 +696,12 @@ void rampa(){
 }
 
 
+
 // Gira a la derecha 90°
 void giro_derecha(){
     ineI_falso=0;
     // avanza un tiempo para centrar la vuelta
     alto();
-    delay(1000);
     while ((SII!=0) && (SID!=0)){
         motori_D.setSpeed(ade_ordi);  
         motori_D.run(FORWARD);        
@@ -803,13 +733,17 @@ void giro_derecha(){
     motori_D.run(FORWARD); 
     motord_D.setSpeed(ade_ordd);
     motord_D.run(BACKWARD);
-    delay(900);
+    delay(1200);
     // avanza para centrarse
-    motori_D.setSpeed(ade_ordi);  
-    motori_D.run(FORWARD);        
-    motord_D.setSpeed(ade_ordd);  
-    motord_D.run(FORWARD);        
-    delay(esp_giro);
+    for (int cont_ciclo=0;cont_ciclo<=4;cont_ciclo++){
+        motori_D.setSpeed(ade_ordi);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);        
+        delay(esp_giro/4);
+        lee();
+        ver_delante();
+    }
     alto();
     //delay(1000);
     // arranca de nuevo
@@ -851,11 +785,15 @@ void giro_derecha_falso(){
     motord_D.run(BACKWARD);
     delay(1050);
     // avanza para centrarse
-    motori_D.setSpeed(ade_ordi);  
-    motori_D.run(FORWARD);        
-    motord_D.setSpeed(ade_ordd);  
-    motord_D.run(FORWARD);        
-    delay(esp_giro);
+    for (int cont_ciclo=0;cont_ciclo<=4;cont_ciclo++){
+        motori_D.setSpeed(ade_ordi);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);        
+        delay(esp_giro/4);
+        lee();
+        ver_delante();
+    }
     alto();
     //delay(1000);
     // arranca de nuevo
@@ -872,11 +810,15 @@ void giro_derecha_falso(){
 void giro_izquierda(){
     ineI_falso=0;
     // avanza un tiempo para centrar la vuelta
-    motori_D.setSpeed(ade_ordi);  
-    motori_D.run(FORWARD);        
-    motord_D.setSpeed(ade_ordd);  
-    motord_D.run(FORWARD);        
-    delay(ineI); //avanza para centrar el giro
+    //alto();
+    while ((SII!=0) && (SID!=0)){
+        motori_D.setSpeed(ade_ordi);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);  
+        lee();
+    }
+    alto();
     // inicia el giro a la izquierda para separar el sensor derecho
     motori_D.setSpeed(ade_ordi);
     motori_D.run(BACKWARD); 
@@ -899,13 +841,17 @@ void giro_izquierda(){
     motori_D.run(BACKWARD); 
     motord_D.setSpeed(ade_ordd);
     motord_D.run(FORWARD);
-    delay(1000);
-    // se centra
-    motori_D.setSpeed(ade_ordi);  
-    motori_D.run(FORWARD);        
-    motord_D.setSpeed(ade_ordd);  
-    motord_D.run(FORWARD);        
-    delay(esp_giro);
+    delay(800);
+    // avanza para centrarse
+    for (int cont_ciclo=0;cont_ciclo<=4;cont_ciclo++){
+        motori_D.setSpeed(ade_ordi);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);        
+        delay(esp_giro/4);
+        lee();
+        ver_delante();
+    }
     alto();
     //delay(1000);
     // arranca
@@ -932,12 +878,16 @@ void giro_izquierda_falso(){
     motord_D.setSpeed(ade_ordd);
     motord_D.run(FORWARD);
     delay(t_giroi_flaso);
-    // se centra
-    motori_D.setSpeed(ade_ordi);  
-    motori_D.run(FORWARD);        
-    motord_D.setSpeed(ade_ordd);  
-    motord_D.run(FORWARD);        
-    delay(esp_giro);
+    // avanza para centrarse
+    for (int cont_ciclo=0;cont_ciclo<=4;cont_ciclo++){
+        motori_D.setSpeed(ade_ordi);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);        
+        delay(esp_giro/4);
+        lee();
+        ver_delante();
+    }
     alto();
     // arranca
     motori_D.setSpeed(ade_ordi);  
@@ -1005,12 +955,17 @@ void giro_u(){
        }
       alto();
       ul_giro="U";
-      // avanza para la iniercia
-      motori_D.setSpeed(ade_ordi);  
-      motori_D.run(FORWARD);        
-      motord_D.setSpeed(ade_ordd);  
-      motord_D.run(FORWARD);        
-      delay(espera_u);
+      // avanza para centrarse
+    for (int cont_ciclo=0;cont_ciclo<=4;cont_ciclo++){
+        motori_D.setSpeed(ade_ordi);  
+        motori_D.run(FORWARD);        
+        motord_D.setSpeed(ade_ordd);  
+        motord_D.run(FORWARD);        
+        delay(espera_u/4);
+        lee();
+        ver_delante();
+    }        
+      
       
 }
 
@@ -1094,39 +1049,35 @@ void negro(){
 
 // Sensor delantero
 void ultra_D(){
-  digitalWrite(trigPin_D, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(trigPin_D, LOW);
-  duration = pulseIn(echoPin_D, HIGH); //Devuelve la longitud del pulso del pin Echo en us
-  // Imprime valores por el puerto serie:
-  // Convierte el tiempo de recepción del eco en distancia:
-  inches = microsecondsToInches(duration);
-  cm_D = microsecondsToCentimeters(duration);
+    digitalWrite(trigPin_D, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(trigPin_D, LOW);
+    duration = pulseIn(echoPin_D, HIGH); //Devuelve la longitud del pulso del pin Echo en us
+    // Convierte el tiempo de recepción del eco en distancia:
+    inches = microsecondsToInches(duration);
+    cm_D = microsecondsToCentimeters(duration);
 }
 
 
 // Sensor derecho
 void ultra_R(){
-  digitalWrite(trigPin_R, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(trigPin_R, LOW);
-  duration = pulseIn(echoPin_R, HIGH); //Devuelve la longitud del pulso del pin Echo en us
-  // Imprime valores por el puerto serie:
-  // Convierte el tiempo de recepción del eco en distancia:
-  inches = microsecondsToInches(duration);
-  cm_R = microsecondsToCentimeters(duration);
-  //cm_R=10;
+    digitalWrite(trigPin_R, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(trigPin_R, LOW);
+    duration = pulseIn(echoPin_R, HIGH); //Devuelve la longitud del pulso del pin Echo en us
+    // Convierte el tiempo de recepción del eco en distancia:
+    inches = microsecondsToInches(duration);
+    cm_R = microsecondsToCentimeters(duration);
 }
 // Sensor izquierdo
 void ultra_L(){
-  digitalWrite(trigPin_L, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(trigPin_L, LOW);
-  duration = pulseIn(echoPin_L, HIGH); //Devuelve la longitud del pulso del pin Echo en us
-  // Imprime valores por el puerto serie:
-  // Convierte el tiempo de recepción del eco en distancia:
-  inches = microsecondsToInches(duration);
-  cm_L = microsecondsToCentimeters(duration);
+    digitalWrite(trigPin_L, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(trigPin_L, LOW);
+    duration = pulseIn(echoPin_L, HIGH); //Devuelve la longitud del pulso del pin Echo en us
+    // Convierte el tiempo de recepción del eco en distancia:
+    inches = microsecondsToInches(duration);
+    cm_L = microsecondsToCentimeters(duration);
 }
 
 // Calcula la distancia en pulgadas
