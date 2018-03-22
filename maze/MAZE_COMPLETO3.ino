@@ -96,7 +96,7 @@ AF_DCMotor motord_D(2); //motor derecho
     // inicia ciclo
       int inicio=0;
     // tiempo de espera para pruebas 
-      int espera=3000;
+      int espera=5000;
     // distancia para encontrar las paredes (centimetros)
       int d_enc=30; 
       int d_fte=5;
@@ -240,10 +240,10 @@ void loop() {
         
    lee();
    //muestra datos de sensores en el monitor serial
-   //muestra();
+   muestra();
 
    // busca el camino 
-    busca();
+    //busca();
 
    //ajuste para giros
    //giro_izquierda();
@@ -516,37 +516,68 @@ void busca(){
 
 
 void ver_delante(){
+  // obstaculos
   //SEI,SII,SED,SID
-            if (SEI==0){
-                alto();
-                delay(1000);
-                atras();
-                delay(1000);
-                aladerecha();
+  if (SEI==0 && SED==0){
+      alto();
+      lee();
+      if (izquierda==0 && derecha==1){
+         while (SEI==0 && SED==0){
+            aladerecha();
+            lee();
+         }
+         delay(200);
+         while (SEI==1){
+            alaizquierda();
+            lee();
+         }
+      }else {
+            if (izquierda==1 && derecha==0){
+                 while (SEI==0 && SED==0){
+                    alaizquierda();
+                    lee();
+                 }
+                 delay(200);
+                 while (SEI==1){
+                    aladerecha();
+                    lee();
+                 }
             }
-            if (SII==0){
-                alto();
-                delay(1000);
-                atras();
-                delay(1000);
-                aladerecha();
-                aladerecha();
-            }
-            if (SID==0){
-                alto();
-                delay(1000);
-                atras();
-                delay(1000);
-                alaizquierda();
-            }
-            if (SED==0){
-                alto();
-                delay(1000);
-                atras();
-                delay(1000);
-                alaizquierda();
-                alaizquierda();
-            }
+      }
+      
+  }else {
+      if (SEI==0){
+           alto();
+           delay(1000);
+           atras();
+           delay(1000);
+           aladerecha();
+        }
+        if (SII==0){
+           alto();
+           delay(1000);
+           atras();
+           delay(1000);
+           aladerecha();
+           aladerecha();
+        }
+        if (SID==0){
+           alto();
+           delay(1000);
+           atras();
+           delay(1000);
+           alaizquierda();
+        }
+        if (SED==0){
+           alto();
+           delay(1000);
+           atras();
+           delay(1000);
+           alaizquierda();
+           alaizquierda();
+        }    
+  }
+  
 }
 
 
